@@ -3,6 +3,42 @@ name = "almanac"
 version = "0.1.0"
 description = "Almanac of popular events."
 readme = "README.md"
+requires-python = ">=3.11"
 authors = [
     { name = "Jules Baratoux", email = "jules.baratoux+almanac@gmail.com" }
 ]
+dependencies = [
+    "flet~=1.0",
+    "pydantic~=2.1",
+]
+
+[dependency-groups]
+dev = [
+    "flet-cli~=1.0",
+    "flet-desktop~=1.0",
+    "flet-web~=1.0",
+    "flet[test]~=1.0",
+    "pytest~=9.1",
+]
+
+[tool.pytest.ini_options]
+addopts = "--doctest-modules"
+asyncio_mode = "auto"
+testpaths = ["tests"]
+pythonpath = ["src"]
+
+[tool.flet]
+org = "fr.baratoux.jules"
+product = "Almanac"
+icon_background = "#111827"
+
+[tool.flet.app]
+path = "src"
+
+[tool.flet.splash]
+color = "#111827"
+dark_color = "#111827"
+
+[tool.flet.android.signing]
+key_store = "C:/Users/jules/keystores/fr.baratoux.jules.almanac.jks"
+key_alias = "upload"
