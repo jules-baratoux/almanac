@@ -206,3 +206,287 @@ EVENTS: list[Event] = sorted((
     ),
 
 ))
+
+if __name__ == "__main__":
+    from pathlib import Path
+    import pysbd
+
+
+    def reformat(path: Path):
+        """
+        Reformats the source code.
+        - sort events by datetimes
+        - use month constants
+        - fill paragraphs
+        - double-quote the Title literal values and Event titles
+        - single-quote the Label literal values and Event labels
+        - sort Literals
+        """
+
+        import ast
+        import json
+        from calendar import month_name
+        from typing import cast, TypeIs
+
+        MAXLENGTH = 120
+
+        PUNCT = re.compile(r"[,;:](?=\s)")
+        SEGMENT = pysbd.Segmenter(language="en", clean=False).segment
+        MONTHS = {name.upper(): number for number, name in enumerate(month_name) if name}
+        LITERAL_QUOTES = {"Title": '"', "Label": "'"}  # quote mark of each Literal's values
+        TITLE_QUOTE = '"'  # Event.title
+        LABEL_QUOTE = "'"  # Event.labels (the variadic arguments, from index LABELS_INDEX)
+        LABELS_INDEX = 4
+
+        def quote(value: str, mark: str) -> str:
+            """Write `value` as a Python string literal delimited by `mark` (a single or double quote)."""
+            body = json.dumps(value, ensure_ascii=False)[1:-1]  # double-quoted escaping, without the quotes
+            if mark == '"':
+                return f'"{body}"'
+            # switch to single quotes: unescape \" and escape '
+            body = body.replace('\\"', '"').replace("'", "\\'")
+            return f"'{body}'"
+
+        def fill(sentence: str, maxlength: int) -> list[str]:
+            """Split a sentence into pieces of at most `maxlength` chars.
+
+            Prefer breaking after punctuation, then at a space.
+            """
+            pieces = []
+            while len(sentence) > maxlength:
+                # Last punctuation (followed by whitespace) that keeps the piece within maxlength.
+                cut = max(
+                    (m.end() for m in PUNCT.finditer(sentence) if m.end() <= maxlength),
+                    default=0,
+                )
+                if not cut:
+                    # Fallback: last space that fits.
+                    cut = sentence.rfind(" ", 0, maxlength + 1)
+                if cut <= 0:
+                    # A single word that's too long: break after it.
+                    cut = sentence.find(" ") % len(sentence) or len(sentence)
+                pieces.append(sentence[:cut].rstrip())
+                sentence = sentence[cut:].lstrip()
+            pieces.append(sentence)
+            return pieces
+
+        def fill_paragraph(text: str, maxlength: int) -> str:
+            lines: list[str] = []
+            line = ""
+            for sentence in SEGMENT(text):
+                for piece in fill(sentence.strip(), maxlength):
+                    if line and len(line) + 1 + len(piece) > maxlength:
+                        lines.append(line)
+                        line = piece
+                    else:
+                        line = f"{line} {piece}".strip()
+            if line:
+                lines.append(line)
+            return "\n".join(lines)
+
+        def dt_repr(dt: datetime) -> str:
+            fields = [dt.year, month_name[dt.month].upper(), dt.day, dt.hour, dt.minute]
+            if dt.second:
+                fields.append(dt.second)
+            return f"datetime({', '.join(map(str, fields))})"
+
+        def locate(source: str):
+            """Return the UTF-8 bytes of `source` and a function giving a node's (begin, end) byte offsets."""
+            data = source.encode()
+            starts = [0]
+            for raw in data.splitlines(keepends=True):
+                starts.append(starts[-1] + len(raw))
+
+            def span(node: ast.expr | ast.stmt) -> tuple[int, int]:
+                # ast columns are UTF-8 byte offsets
+                return starts[node.lineno - 1] + node.col_offset, starts[node.end_lineno - 1] + node.end_col_offset
+
+            return data, span
+
+        def apply(data: bytes, edits: list[tuple[int, int, bytes]]) -> str:
+            for begin, end, new in sorted(edits, reverse=True):  # back to front keeps offsets valid
+                data = data[:begin] + new + data[end:]
+            return data.decode()
+
+        def is_call(node: ast.AST, name: str) -> TypeIs[ast.Call]:
+            return isinstance(node, ast.Call) and isinstance(node.func, ast.Name) and node.func.id == name
+
+        def instances[T](iterable, typ: type[T]):
+            for item in iterable:
+                if isinstance(item, typ):
+                    yield item
+
+        def event_calls(tree: ast.AST):
+            return [call for call in instances(ast.walk(tree), ast.Call) if is_call(call, "Event")]
+
+        def event_argument(call: ast.Call, index: int, name: str) -> ast.expr | None:
+            if len(call.args) > index:
+                return call.args[index]
+            return next((k.value for k in call.keywords if k.arg == name), None)
+
+        def literal_datetime(call: ast.AST) -> datetime | None:
+            """Evaluate `datetime(2026, SEPTEMBER, 1, 8, 0)` or `datetime(2026, 9, 1)` without running any code."""
+            if not is_call(call, "datetime") or call.keywords:
+                return None
+            values: list[int] = []
+            for arg in call.args:
+                if isinstance(arg, ast.Constant) and type(arg.value) is int:
+                    values.append(arg.value)
+                elif isinstance(arg, ast.Name) and arg.id in MONTHS:
+                    values.append(MONTHS[arg.id])
+                else:
+                    return None
+            try:
+                return datetime(*values)
+            except (TypeError, ValueError):
+                return None
+
+        def month_names(source: str) -> str:
+            """Write every datetime of an `Event(...)` with the plain english month name."""
+            data, span = locate(source)
+            edits = []
+            for event in event_calls(ast.parse(source)):
+                for node in instances(ast.walk(event), ast.expr | ast.stmt):
+                    if (value := literal_datetime(node)) is not None:
+                        begin, end = span(node)
+                        edits.append((begin, end, dt_repr(value).encode()))
+            return apply(data, edits)
+
+        def calendar_import(source: str) -> str:
+            """Keep `from calendar import ...` in sync with the month names actually used."""
+            tree = ast.parse(source)
+            used = sorted({name.id for name in instances(ast.walk(tree), ast.Name) if name.id in MONTHS})
+            if not used:
+                return source
+            data, span = locate(source)
+            for node in tree.body:
+                if (isinstance(node, ast.ImportFrom) and node.module == "calendar" and node.level == 0
+                        and all(a.name in MONTHS and a.asname is None for a in node.names)):
+                    line = f"from calendar import {', '.join(used)}"
+                    if len(line) > MAXLENGTH:
+                        line = "from calendar import (\n" + "".join(f"    {name},\n" for name in used) + ")"
+                    begin, end = span(node)
+                    return apply(data, [(begin, end, line.encode())])
+            return source
+
+        def literal_values(source: str) -> str:
+            """Write the values of the `Title` (double-quoted) and `Label` (single-quoted) literals,
+            one per line, sorted (and unique)."""
+            data, span = locate(source)
+            edits = []
+            for node in ast.parse(source).body:
+                if not (isinstance(node, ast.TypeAlias)
+                        and isinstance(node.name, ast.Name) and node.name.id in LITERAL_QUOTES):
+                    continue
+                literal = node.value
+                if not (isinstance(literal, ast.Subscript) and isinstance(literal.value, ast.Name)
+                        and literal.value.id == "Literal"):
+                    continue
+                subscript = literal.slice
+                items = subscript.elts if isinstance(subscript, ast.Tuple) else [subscript]
+                strings: list[str] = []
+                for constant in instances(items, ast.Constant):
+                    if isinstance(value := constant.value, str):
+                        strings.append(value)
+                if len(strings) != len(items):
+                    continue  # only handle plain string values
+                indent = " " * node.col_offset
+                mark = LITERAL_QUOTES[node.name.id]
+                lines = "".join(
+                    f"{indent}    {quote(value, mark)},\n"
+                    for value in sorted(set(strings))
+                )
+                begin, end = span(literal)
+                edits.append((begin, end, f"Literal[\n{lines}{indent}]".encode()))
+            return apply(data, edits)
+
+        def event_strings(source: str) -> str:
+            """Write the title of every `Event(...)` double-quoted and its labels single-quoted."""
+            data, span = locate(source)
+            edits = []
+
+            def requote(arg: ast.expr | None, mark: str):
+                if isinstance(arg, ast.Constant) and isinstance(arg.value, str):
+                    begin, end = span(arg)
+                    if not data[begin:end].startswith((b'"""', b"'''")):  # leave multi-line strings alone
+                        edits.append((begin, end, quote(arg.value, mark).encode()))
+
+            for event in event_calls(ast.parse(source)):
+                requote(event_argument(event, 0, "title"), TITLE_QUOTE)
+                for label in event.args[LABELS_INDEX:]:
+                    requote(label, LABEL_QUOTE)
+            return apply(data, edits)
+
+        def wrap_descriptions(source: str) -> str:
+            """Re-wrap the description of every `Event(...)`."""
+            data, span = locate(source)
+            edits = []
+            for event in event_calls(ast.parse(source)):
+                arg = event_argument(event, 1, "description")
+                if isinstance(constant := arg, ast.Constant) and isinstance(value := constant.value, str):
+                    begin, end = span(constant)
+                    if not data[begin:end].startswith(b'"""') or b"\\" in data[begin:end]:
+                        continue  # only handle plain triple-quoted strings
+                    indent = " " * constant.col_offset
+                    body = fill_paragraph(" ".join(value.split()), MAXLENGTH - len(indent))
+                    body = body.replace("\n", "\n" + indent)
+                    edits.append((begin, end, f'"""\n{indent}{body}\n{indent}"""'.encode()))
+            return apply(data, edits)
+
+        def literal_argument(call: ast.Call, index: int, name: str) -> datetime | None:
+            arg = event_argument(call, index, name)
+            return literal_datetime(arg) if arg is not None else None
+
+        def sort_events(source: str) -> str:
+            """Order the events of `sorted((Event(...), ...))` by start, then stop, like `Event.__lt__`."""
+            tree = ast.parse(source)
+            data, span = locate(source)
+            for call in ast.walk(tree):
+                if not is_call(call, "sorted") or not call.args:
+                    continue
+                container = call.args[0]
+                if not isinstance(container, (ast.Tuple, ast.List)):
+                    continue
+                items = container.elts
+                events = cast(list[ast.Call], [item for item in items if is_call(item, "Event")])
+                if not events or len(events) != len(items):
+                    continue
+                sort_keys: list[tuple[datetime, datetime]] = []
+                for event in events:
+                    begin_dt = literal_argument(event, 2, "start")
+                    end_dt = literal_argument(event, 3, "stop")
+                    if begin_dt is None or end_dt is None:
+                        return source  # a datetime that is not a literal: can't order it statically
+                    sort_keys.append((begin_dt, end_dt))
+                order = sorted(range(len(events)), key=lambda i: sort_keys[i])  # stable, like runtime `sorted`
+                spans = [span(event) for event in events]
+                return apply(data, [(begin, end, data[spans[j][0]:spans[j][1]])
+                                    for (begin, end), j in zip(spans, order)])
+            return source
+
+        def reformat_source(source: str) -> str:
+            for step in (literal_values, event_strings, month_names, calendar_import, wrap_descriptions, sort_events):
+                source = step(source)
+            return source
+
+        old = path.read_text(encoding="utf-8")
+        new = reformat_source(old)
+        if new != old:
+            path.write_text(new, encoding="utf-8")
+            print(f"{path.name} reformatted.")
+        else:
+            print(f"{path.name} already formatted.")
+
+
+    def report_missing_events():
+        from typing import get_args
+
+        actual: set[str] = {event.title for event in EVENTS}
+        expected: set[str] = set(get_args(Title.__value__))
+        if missing := expected - actual:
+            names: list[str] = sorted(repr(title) for title in missing)
+            print("Missing Events:", ", ".join(names))
+
+
+    report_missing_events()
+    reformat(Path(__file__))
