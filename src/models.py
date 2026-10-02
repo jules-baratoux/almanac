@@ -1,9 +1,11 @@
 from __future__ import annotations
 
 import re
+import sys
 from calendar import DECEMBER, JANUARY, NOVEMBER, OCTOBER, SEPTEMBER
 from datetime import datetime
 from typing import Annotated, Literal
+from warnings import warn
 
 from pydantic import Field, validate_call
 
@@ -86,6 +88,18 @@ class Event:
         self.start = start
         self.stop = stop
         self.labels = set(labels)
+
+    @property
+    def title(self):
+        return self.__title
+
+    @title.setter
+    def title(self, value: str, seen=set[str]()):
+        if value in seen:
+            warn(f"Event title '{value}' is already used.", UserWarning, stacklevel=3, skip_file_prefixes=(sys.prefix,))
+
+        seen.add(value)
+        self.__title = value
 
     def __lt__(self, other: Event) -> bool:
         return self.stop < other.stop if self.start == other.start else self.start < other.start
