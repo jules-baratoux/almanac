@@ -26,19 +26,23 @@ type Title = Literal[
     "Journées Européennes du Patrimoine",
     "Labor Day",
     "Mid-Autumn Festival",
+    "Mole Day",
     "National Day Golden Week",
     "New Year's Eve",
     "Pi Day",
+    "Programmer's Day",
     "Rentrée",
     "Rosh Hashanah",
     "Santo Stefano (Boxing Day)",
     "Singles' Day",
     "Star Wars Day",
     "Sukkot",
+    "Tau Day",
     "Thanksgiving",
     "Towel day",
     "Winter Solstice",
     "Yom Kippur",
+    "e-Day",
 ]
 
 type Label = Literal[
@@ -148,6 +152,17 @@ EVENTS: list[Event] = sorted((
     ),
 
     Event(
+        "Programmer's Day",
+        """
+        Honors programmers on the 256th day of the year, the number of values in a byte.
+        Wear a geeky tech T-shirt and bring pizza, coffee, or cupcakes to share.
+        Greet colleagues with "Happy Programmer's Day!", thank your dev team, and never deploy on a Friday!
+        """,
+        datetime(2026, SEPTEMBER, 13, 9, 0), datetime(2026, SEPTEMBER, 13, 23, 59),
+        'Geek'
+    ),
+
+    Event(
         "Journées Européennes du Patrimoine",
         """
         Opens cultural monuments and historic sites to the public for free exploration.
@@ -224,6 +239,17 @@ EVENTS: list[Event] = sorted((
         """,
         datetime(2026, OCTOBER, 19, 0, 0), datetime(2026, OCTOBER, 19, 23, 59),
         'China'
+    ),
+
+    Event(
+        "Mole Day",
+        """
+        Celebrates the mole, chemistry's unit of 6.02×10²³ particles, at 6:02 on 10/23.
+        Wear a lab coat or a mole-themed shirt and bring guacamole or mole-shaped treats.
+        Greet fellow chemists with "Happy Mole Day!", share a chemistry pun, and keep experiments safe.
+        """,
+        datetime(2026, OCTOBER, 23, 6, 2), datetime(2026, OCTOBER, 23, 18, 2),
+        'Geek'
     ),
 
     Event(
