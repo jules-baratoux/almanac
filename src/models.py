@@ -176,6 +176,17 @@ EVENTS: list[Event] = sorted((
     ),
 
     Event(
+        "Día de los Muertos",
+        """
+        Celebrates and honors deceased loved ones with vibrant traditions and altars.
+        Wear colorful festive clothing or skeleton makeup, bring sugar skulls or pan de muerto,
+        and greet others remembering ancestors with joy.
+        """,
+        datetime(2026, NOVEMBER, 1, 0, 0), datetime(2026, NOVEMBER, 2, 23, 59),
+        'Mexico'
+    ),
+
+    Event(
         "Singles' Day",
         """
         Celebrates being single with massive online shopping sprees and treating oneself.
