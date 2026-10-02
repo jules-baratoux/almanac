@@ -40,6 +40,7 @@ type Label = Literal[
     'China',
     'Family',
     'France',
+    'Geek',
     'Italy',
     'Mexico',
     'Pop',
@@ -127,6 +128,17 @@ EVENTS: list[Event] = sorted((
         """,
         datetime(2026, SEPTEMBER, 19, 9, 0), datetime(2026, SEPTEMBER, 20, 19, 0),
         'France'
+    ),
+
+    Event(
+        "Hobbit Day",
+        """
+        Celebrates the birthdays of Bilbo and Frodo Baggins in Middle-earth style.
+        Wear cozy hobbit-inspired or casual outdoor attire, bring hearty food and drinks,
+        and greet fans with a joyful "Happy Hobbit Day!"
+        """,
+        datetime(2026, SEPTEMBER, 22, 10, 0), datetime(2026, SEPTEMBER, 22, 23, 59),
+        'Geek'
     ),
 
     Event(
