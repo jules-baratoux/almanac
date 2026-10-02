@@ -154,6 +154,17 @@ EVENTS: list[Event] = sorted((
     ),
 
     Event(
+        "Double Ninth Festival",
+        """
+        Honors seniors and ancestor veneration on the ninth day of the ninth lunar month.
+        Wear comfortable outdoor attire for climbing heights, bring chrysanthemum wine,
+        and greet elders respectfully wishing them health and longevity.
+        """,
+        datetime(2026, OCTOBER, 19, 0, 0), datetime(2026, OCTOBER, 19, 23, 59),
+        'China'
+    ),
+
+    Event(
         "Halloween",
         """
         Celebrates the spooky season and ancient traditions of costume fun.
@@ -162,6 +173,16 @@ EVENTS: list[Event] = sorted((
         and enjoy the festive thrills!
         """,
         datetime(2026, OCTOBER, 31, 18, 0), datetime(2026, OCTOBER, 31, 23, 59),
+    ),
+
+    Event(
+        "Singles' Day",
+        """
+        Celebrates being single with massive online shopping sprees and treating oneself.
+        Wear fun casual clothes, keep your cart ready for flash sales, and greet friends with joyful shopping energy!
+        """,
+        datetime(2026, NOVEMBER, 11, 0, 0), datetime(2026, NOVEMBER, 11, 23, 59),
+        'China'
     ),
 
     Event(
