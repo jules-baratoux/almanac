@@ -273,6 +273,26 @@ EVENTS: list[Event] = sorted((
         datetime(2026, NOVEMBER, 30, 0, 0), datetime(2026, NOVEMBER, 30, 23, 59),
         'Pop'
     ),
+    Event(
+        "Feast of Saint Ambrose",
+        """
+        Honors Milan's patron saint with festive celebrations and the opening of the La Scala opera season.
+        Wear elegant evening attire, enjoy local panettone, and greet guests warmly with Italian festive cheer.
+        """,
+        datetime(2026, DECEMBER, 7, 0, 0), datetime(2026, DECEMBER, 7, 23, 59),
+        'Italy'
+    ),
+
+    Event(
+        "Feast of the Immaculate Conception",
+        """
+        Celebrates the solemn belief regarding the Virgin Mary's conception.
+        Wear smart casual attire, attend church services or local light displays,
+        and greet others with peaceful holiday blessings.
+        """,
+        datetime(2026, DECEMBER, 8, 0, 0), datetime(2026, DECEMBER, 8, 23, 59),
+        'Italy'
+    ),
 
     Event(
         "Winter Solstice",
@@ -294,6 +314,16 @@ EVENTS: list[Event] = sorted((
         Greet others warmly with "Merry Christmas" and share in the joy.
         """,
         datetime(2026, DECEMBER, 25, 0, 0), datetime(2026, DECEMBER, 25, 23, 59),
+    ),
+
+    Event(
+        "Santo Stefano (Boxing Day)",
+        """
+        Celebrates Saint Stephen's Day in Italy with family gatherings and festive leftovers.
+        Wear cozy winter clothes, relax at home or stroll town lights, and greet loved ones with warm holiday wishes.
+        """,
+        datetime(2026, DECEMBER, 26, 0, 0), datetime(2026, DECEMBER, 26, 23, 59),
+        'Italy'
     ),
 
     Event(
