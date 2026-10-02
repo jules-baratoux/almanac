@@ -94,6 +94,28 @@ class Event:
 EVENTS: list[Event] = sorted((
 
     Event(
+        "Rentrée",
+        """
+        Marks the back-to-school and post-summer work return in France.
+        Wear smart professional or fresh school attire, stock up on new stationery,
+        and greet colleagues with a cheerful "Bonne rentrée!"
+        """,
+        datetime(2026, SEPTEMBER, 1, 8, 0), datetime(2026, SEPTEMBER, 1, 18, 0),
+        'France'
+    ),
+
+    Event(
+        "Journées Européennes du Patrimoine",
+        """
+        Opens cultural monuments and historic sites to the public for free exploration.
+        Wear comfortable walking shoes, bring a camera,
+        and greet guides politely while discovering fascinating architectural heritage.
+        """,
+        datetime(2026, SEPTEMBER, 19, 9, 0), datetime(2026, SEPTEMBER, 20, 19, 0),
+        'France'
+    ),
+
+    Event(
         "Mid-Autumn Festival",
         """
         Celebrates the autumn harvest and lunar worship under the brightest full moon.
@@ -126,6 +148,16 @@ EVENTS: list[Event] = sorted((
         and enjoy the festive thrills!
         """,
         datetime(2026, OCTOBER, 31, 18, 0), datetime(2026, OCTOBER, 31, 23, 59),
+    ),
+
+    Event(
+        "Armistice",
+        """
+        Commemorates the armistice signed between the Allies of World War I and Germany.
+        Wear respectful dark attire, observe a moment of silence at the 11th hour, and reflect on peace and remembrance.
+        """,
+        datetime(2026, NOVEMBER, 11, 8, 0), datetime(2026, NOVEMBER, 11, 18, 0),
+        'France'
     ),
 
     Event(
