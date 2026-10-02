@@ -11,6 +11,7 @@ from pydantic import Field, validate_call
 
 type Title = Literal[
     "Armistice",
+    "Asarah B'Tevet",
     "Beaujolais Nouveau",
     "Black Friday",
     "Christmas",
@@ -20,6 +21,7 @@ type Title = Literal[
     "Feast of Saint Ambrose",
     "Feast of the Immaculate Conception",
     "Halloween",
+    "Hanukkah",
     "Hobbit Day",
     "Journées Européennes du Patrimoine",
     "Labor Day",
@@ -28,12 +30,15 @@ type Title = Literal[
     "New Year's Eve",
     "Pi Day",
     "Rentrée",
+    "Rosh Hashanah",
     "Santo Stefano (Boxing Day)",
     "Singles' Day",
     "Star Wars Day",
+    "Sukkot",
     "Thanksgiving",
     "Towel day",
     "Winter Solstice",
+    "Yom Kippur",
 ]
 
 type Label = Literal[
@@ -42,6 +47,7 @@ type Label = Literal[
     'France',
     'Geek',
     'Italy',
+    'Jewish',
     'Mexico',
     'Pop',
     'USA',
@@ -131,6 +137,17 @@ EVENTS: list[Event] = sorted((
     ),
 
     Event(
+        "Rosh Hashanah",
+        """
+        Celebrates the Jewish New Year with introspection and sweet new beginnings.
+        Wear smart holiday attire, dip apples in honey,
+        and greet friends with "Shana Tova U'Metuka" for a sweet year ahead.
+        """,
+        datetime(2026, SEPTEMBER, 11, 18, 0), datetime(2026, SEPTEMBER, 13, 21, 0),
+        'Jewish'
+    ),
+
+    Event(
         "Journées Européennes du Patrimoine",
         """
         Opens cultural monuments and historic sites to the public for free exploration.
@@ -139,6 +156,17 @@ EVENTS: list[Event] = sorted((
         """,
         datetime(2026, SEPTEMBER, 19, 9, 0), datetime(2026, SEPTEMBER, 20, 19, 0),
         'France'
+    ),
+
+    Event(
+        "Yom Kippur",
+        """
+        The holiest day in Judaism, focused on atonement and sincere repentance.
+        Wear white or modest comfortable clothing, fast for 25 hours,
+        and greet others with wishes for an easy and meaningful fast.
+        """,
+        datetime(2026, SEPTEMBER, 20, 18, 0), datetime(2026, SEPTEMBER, 21, 21, 0),
+        'Jewish'
     ),
 
     Event(
@@ -162,6 +190,17 @@ EVENTS: list[Event] = sorted((
         """,
         datetime(2026, SEPTEMBER, 25, 0, 0), datetime(2026, SEPTEMBER, 25, 23, 59),
         'China'
+    ),
+
+    Event(
+        "Sukkot",
+        """
+        Commemorates the shelter of the Israelites in the desert.
+        dine under the leafy roof of a sukkah, and wave the lulav and etrog with gratitude.
+        Welcome guests cheerfully with "Chag Sameach" and enjoy communal celebration under the stars!
+        """,
+        datetime(2026, SEPTEMBER, 25, 18, 0), datetime(2026, OCTOBER, 2, 21, 0),
+        'Jewish'
     ),
 
     Event(
@@ -273,6 +312,18 @@ EVENTS: list[Event] = sorted((
         datetime(2026, NOVEMBER, 30, 0, 0), datetime(2026, NOVEMBER, 30, 23, 59),
         'Pop'
     ),
+
+    Event(
+        "Hanukkah",
+        """
+        Celebrates the Festival of Lights and the miracle of the oil flask.
+        Wear festive attire, light the menorah each evening, enjoy latkes and sufganiyot,
+        and greet friends with "Happy Hanukkah."
+        """,
+        datetime(2026, DECEMBER, 4, 18, 0), datetime(2026, DECEMBER, 12, 21, 0),
+        'Jewish'
+    ),
+
     Event(
         "Feast of Saint Ambrose",
         """
@@ -292,6 +343,16 @@ EVENTS: list[Event] = sorted((
         """,
         datetime(2026, DECEMBER, 8, 0, 0), datetime(2026, DECEMBER, 8, 23, 59),
         'Italy'
+    ),
+
+    Event(
+        "Asarah B'Tevet",
+        """
+        Observes the fast day commemorating the beginning of the siege of Jerusalem.
+        Wear modest clothing for a day of fasting and introspection, and greet others with meaningful fast-well wishes.
+        """,
+        datetime(2026, DECEMBER, 20, 6, 0), datetime(2026, DECEMBER, 20, 18, 0),
+        'Jewish'
     ),
 
     Event(
