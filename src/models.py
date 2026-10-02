@@ -120,6 +120,17 @@ EVENTS: list[Event] = sorted((
     ),
 
     Event(
+        "Labor Day",
+        """
+        Honors the American labor movement and workers' contributions.
+        Wear casual weekend clothes or patriotic colors, bring grilled food and drinks for a backyard cookout,
+        and enjoy a relaxing day off!
+        """,
+        datetime(2026, SEPTEMBER, 7, 9, 0), datetime(2026, SEPTEMBER, 7, 23, 59),
+        'USA'
+    ),
+
+    Event(
         "Journées Européennes du Patrimoine",
         """
         Opens cultural monuments and historic sites to the public for free exploration.
