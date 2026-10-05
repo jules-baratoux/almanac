@@ -211,7 +211,7 @@ EVENTS: list[Event] = sorted((
         "Sukkot",
         """
         Commemorates the shelter of the Israelites in the desert.
-        dine under the leafy roof of a sukkah, and wave the lulav and etrog with gratitude.
+        Dine under the leafy roof of a sukkah, and wave the lulav and etrog with gratitude.
         Welcome guests cheerfully with "Chag Sameach" and enjoy communal celebration under the stars!
         """,
         datetime(2026, SEPTEMBER, 25, 18, 0), datetime(2026, OCTOBER, 2, 21, 0),
