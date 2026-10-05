@@ -62,12 +62,7 @@ def grouped_events() -> list[tuple[str, list[Event]]]:
     return [(name, events) for name, _, events in groups if events]
 
 
-def card(event: Event, today: date) -> Control:
-    # Clip the displayed span so an ongoing event doesn't show past dates —
-    # only "today" onward is shown, even if the event actually started earlier.
-    start = max(event.start.date(), today)
-    stop = event.stop.date()
-
+def card(event: Event) -> Control:
     url = f"https://www.google.com/search?q={quote_plus(event.title)}"
 
     containers = [
@@ -124,7 +119,6 @@ def card(event: Event, today: date) -> Control:
 
 @component
 def view() -> Control:
-    today = date.today()
     sections = grouped_events()
     return Container(
         expand=True,
@@ -135,7 +129,7 @@ def view() -> Control:
                 for control in (
                     *([Divider()] if index else []),
                     Text(heading, theme_style=TextThemeStyle.TITLE_MEDIUM, color=Colors.WHITE_38),
-                    *[card(event, today) for event in events],
+                    *[card(event) for event in events],
                 )
             ],
             horizontal_alignment=CrossAxisAlignment.STRETCH,
