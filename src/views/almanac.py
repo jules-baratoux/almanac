@@ -81,7 +81,7 @@ def card(event: Event) -> Control:
             selectable=True,
         ),
         Markdown(
-            get_span(start, stop),
+            get_span(event.start.date(), event.stop.date()),
             md_style_sheet=MarkdownStyleSheet(
                 p_text_style=TextStyle(color=Colors.WHITE_38),
             ),
