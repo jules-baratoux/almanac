@@ -22,6 +22,7 @@ type Title = Literal[
     "Feast of the Immaculate Conception",
     "Halloween",
     "Hanukkah",
+    "Heure d’hiver",
     "Hobbit Day",
     "Journées Européennes du Patrimoine",
     "Labor Day",
@@ -250,6 +251,17 @@ EVENTS: list[Event] = sorted((
         """,
         datetime(2026, OCTOBER, 23, 6, 2), datetime(2026, OCTOBER, 23, 18, 2),
         'Geek'
+    ),
+
+    Event(
+        "Heure d’hiver",
+        """
+        Marks the end of daylight saving time in France. It was introduced following the 1973 oil crisis and in 2019,
+        MEPs voted but failed to abolish it due to Covid-19. Clocks fall back at 3am to 2am.
+        Enjoy an extra hour of sleep and see you in March!
+        """,
+        datetime(2026, OCTOBER, 25, 3, 0), datetime(2026, OCTOBER, 25, 2, 0),
+        'France'
     ),
 
     Event(
