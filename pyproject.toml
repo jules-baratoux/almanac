@@ -1,9 +1,9 @@
 [project]
 name = "almanac"
-version = "0.1.0"
 description = "Almanac of popular events."
 readme = "README.md"
 requires-python = ">=3.11"
+dynamic = ["version"]
 authors = [
     { name = "Jules Baratoux", email = "jules.baratoux+almanac@gmail.com" }
 ]
