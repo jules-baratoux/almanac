@@ -4,7 +4,7 @@ from urllib.parse import quote_plus
 from flet import Card, Colors, Column, Container, Control, CrossAxisAlignment, Divider, FontWeight, Markdown, \
     MarkdownStyleSheet, Padding, ScrollMode, Text, TextAlign, TextSpan, TextStyle, TextThemeStyle, component
 
-from models import EVENTS, Event
+from events import EVENTS, Event
 
 
 def get_span(start: date, stop: date) -> str:
