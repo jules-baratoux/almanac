@@ -32,33 +32,34 @@ def get_span(start: date, stop: date) -> str:
     return f"{start:%B %d, %Y} – {stop:%B %d, %Y}"
 
 
-def grouped_events(today: date | None = None) -> list[tuple[str, list[Event]]]:
+def grouped_events() -> list[tuple[str, list[Event]]]:
     """Place each upcoming or ongoing event in the earliest matching section."""
-    today = today or date.today()
+    today = date.today()
+    tomorrow = today + timedelta(days=1)
     next_week = today - timedelta(days=today.weekday()) + timedelta(days=7)
     week_after_next = next_week + timedelta(days=7)
     next_month = (today.replace(day=28) + timedelta(days=4)).replace(day=1)
     month_after_next = (next_month.replace(day=28) + timedelta(days=4)).replace(day=1)
     next_year = date(today.year + 1, 1, 1)
 
-    periods = (
-        ("Today", today, today + timedelta(days=1)),
-        ("This week", today + timedelta(days=1), next_week),
-        ("Next week", next_week, week_after_next),
-        ("This month", week_after_next, next_month),
-        (next_month.strftime("%B"), next_month, month_after_next),
-        ("This year", month_after_next, next_year),
+    groups = (
+        ("Today", tomorrow, []),
+        ("This week", next_week, []),
+        ("Next week", week_after_next, []),
+        ("This month", next_month, []),
+        (next_month.strftime("%B"), month_after_next, []),
+        ("This year", next_year, []),
     )
-    groups: list[tuple[str, list[Event]]] = [(name, []) for name, _, _ in periods]
     for event in EVENTS:
-        start, stop = event.start.date(), event.stop.date()
-        if stop < today:
+        event_start = event.start.date()
+        event_stop = max(event_start, event.stop.date())
+        if event_stop < today:
             continue
-        for index, (_, begin, end) in enumerate(periods):
-            if begin < end and start < end and stop >= begin:
-                groups[index][1].append(event)
+        for name, group_stop, group in groups:
+            if event_start < group_stop:
+                group.append(event)
                 break
-    return groups
+    return [(name, events) for name, _, events in groups if events]
 
 
 def card(event: Event, today: date) -> Control:
@@ -124,11 +125,7 @@ def card(event: Event, today: date) -> Control:
 @component
 def view() -> Control:
     today = date.today()
-    sections = [
-        (heading, events)
-        for heading, events in grouped_events(today)
-        if events  # Skip groups with no events entirely.
-    ]
+    sections = grouped_events()
     return Container(
         expand=True,
         content=Column(
