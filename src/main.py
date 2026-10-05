@@ -1,12 +1,12 @@
-import flet as ft
+from flet import Page, SafeArea, ThemeMode, run
 
 from views.almanac import view
 
 
-def main(page: ft.Page):
-    page.theme_mode = ft.ThemeMode.DARK
+def main(page: Page):
+    page.theme_mode = ThemeMode.DARK
     page.title = "Almanac"
-    page.render(lambda: ft.SafeArea(expand=True, content=view()))
+    page.render(lambda: SafeArea(expand=True, content=view()))
 
 
-ft.run(main)
+run(main)
