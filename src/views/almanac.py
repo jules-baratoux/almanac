@@ -9,6 +9,9 @@ from models import EVENTS, Event
 
 def get_span(start: date, stop: date) -> str:
     """
+    >>> get_span(date(2026, 10, 1), date(2026, 10, 7))
+    'October 01 – 07'
+
     >>> get_span(date(2026, 9, 25), date(2026, 9, 25))
     'September 25'
 
@@ -19,7 +22,7 @@ def get_span(start: date, stop: date) -> str:
     'September 25 – October 27'
     """
     if start == stop:
-        return f"{start:%B} {start.day}"
+        return f"{start:%B %d}"
 
     elif start.year == stop.year:
         if start.month == stop.month:
