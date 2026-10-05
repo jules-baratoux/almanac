@@ -2,7 +2,7 @@ from datetime import date, timedelta
 from urllib.parse import quote_plus
 
 from flet import Card, Colors, Column, Container, Control, CrossAxisAlignment, Divider, FontWeight, Markdown, \
-    MarkdownStyleSheet, Padding, ScrollMode, Text, TextAlign, TextStyle, TextThemeStyle, component
+    MarkdownStyleSheet, Padding, ScrollMode, Text, TextAlign, TextSpan, TextStyle, TextThemeStyle, component
 
 from models import EVENTS, Event
 
@@ -70,15 +70,18 @@ def card(event: Event, today: date) -> Control:
     url = f"https://www.google.com/search?q={quote_plus(event.title)}"
 
     containers = [
-        Markdown(
-            f"[{event.title}]({url})",
-            md_style_sheet=MarkdownStyleSheet(
-                p_text_style=TextStyle(
-                    size=22,
-                    weight=FontWeight.BOLD,
-                    color=Colors.WHITE,
+        Text(
+            spans=[
+                TextSpan(
+                    event.title,
+                    url=url,
+                    style=TextStyle(
+                        size=22,
+                        weight=FontWeight.BOLD,
+                        color=Colors.WHITE,
+                    ),
                 ),
-            ),
+            ],
             selectable=True,
         ),
         Markdown(
