@@ -81,12 +81,12 @@ class Event:
             """
             )],
             start: Annotated[datetime, Field(
-                description="Start date and time of the event.",
+                description="When the event starts.",
                 ge=datetime(2026, 9, 1),
                 le=datetime(2027, 1, 2))],
 
             stop: Annotated[datetime, Field(
-                description="End date and time of the event.",
+                description="When the event stops.",
                 ge=datetime(2026, 9, 1),
                 le=datetime(2027, 1, 2))],
 
