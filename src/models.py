@@ -42,6 +42,7 @@ type Title = Literal[
     "Thanksgiving",
     "Towel day",
     "Winter Solstice",
+    "World Philosophy Day",
     "Yom Kippur",
     "e-Day",
 ]
@@ -316,6 +317,17 @@ EVENTS: list[Event] = sorted((
         """,
         datetime(2026, NOVEMBER, 19, 0, 0), datetime(2026, NOVEMBER, 19, 23, 59),
         'France'
+    ),
+
+    Event(
+        "World Philosophy Day",
+        """
+        Celebrates philosophical reflection and open dialogue, proclaimed by UNESCO on the third Thursday of November.
+        Bring thought-provoking question to share, be open-minded.
+        Greet others with "Happy World Philosophy Day," listen curiously, and debate kindly and respectfully!
+        """,
+        datetime(2026, NOVEMBER, 19, 0, 0), datetime(2026, NOVEMBER, 19, 23, 59),
+        'Geek'
     ),
 
     Event(
