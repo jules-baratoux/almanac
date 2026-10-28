@@ -10,13 +10,17 @@ keytool -genkey -v -keystore "C:/Users/jules/keystores/fr.baratoux.jules.almanac
 
 Build for testing on Android
 ```shell
+$env:FLET_ANDROID_SIGNING_KEY_STORE_PASSWORD="..."
+$env:FLET_ANDROID_SIGNING_KEY_PASSWORD="..."
 flet build apk
+adb uninstall fr.baratoux.jules.almanac
+adb install .\build\apk\almanac.apk
 ```
 
 Build for Google Play Store
 ```shell
-$env:FLET_ANDROID_SIGNING_KEY_STORE_PASSWORD = ...
-$env:FLET_ANDROID_SIGNING_KEY_PASSWORD = ...
+$env:FLET_ANDROID_SIGNING_KEY_STORE_PASSWORD="..."
+$env:FLET_ANDROID_SIGNING_KEY_PASSWORD="..."
 flet build aab
 ```
 
