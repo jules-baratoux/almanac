@@ -9,4 +9,5 @@ def main(page: Page):
     page.render(lambda: SafeArea(expand=True, content=view()))
 
 
-run(main)
+if __name__ == "__main__":
+    run(main)
