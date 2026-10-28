@@ -2,7 +2,7 @@
 name = "almanac"
 description = "Almanac of popular events."
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 dynamic = ["version"]
 authors = [
     { name = "Jules Baratoux", email = "jules.baratoux+almanac@gmail.com" }
