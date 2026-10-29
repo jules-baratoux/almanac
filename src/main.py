@@ -54,6 +54,7 @@ class Colors:
     WHITE_90P = flet.Colors.with_opacity(.9, flet.Colors.WHITE)
 
     # Assign colors to Labels
+    ALGERIA = MINT
     CHINA = CORAL
     FAMILY = CLAY
     FRANCE = FOG

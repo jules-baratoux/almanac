@@ -13,6 +13,7 @@ from dispatch import overload
 
 type Title = Annotated[
     Literal[
+        "Algerian Revolution",
         "Armistice",
         "Beaujolais Nouveau",
         "Black Friday",
@@ -44,6 +45,7 @@ type Title = Annotated[
         "Towel day",
         "Winter Solstice",
         "World Philosophy Day",
+        "Yennayer",
         "Yom Kippur",
         "e-Day",
     ],
@@ -67,7 +69,7 @@ Tone: Helpful, sweet, clear, and action-oriented.
 type Date = Annotated[date, Field(
     description="When a event starts or stops.",
     ge=date(year, 9, 1),
-    le=date(2027, 1, 2)
+    le=date(2027, 1, 13)
 )]
 
 type Days = Annotated[int, Field(
@@ -79,6 +81,7 @@ type Days = Annotated[int, Field(
 class Labels(Enum):
     """Labels associated with an event."""
 
+    ALGERIA = "Algeria"
     CHINA = "China"
     FAMILY = "Family"
     FRANCE = "France"
@@ -143,6 +146,17 @@ class Event:
 
 
 EVENTS: list[Event] = sorted((
+
+    Event(
+        "Yennayer",
+        """
+        Celebrates the Amazigh (Berber) New Year, rooted in the ancient agrarian calendar, welcoming the year 2977.
+        Wear traditional Kabyle dress or silver jewelry, and share couscous, berkoukes, dried fruits and sweets.
+        Greet others warmly with "Aseggas Ameggaz!" for a happy and prosperous new year.
+        """,
+        YENNAYER,
+        Labels.ALGERIA
+    ),
 
     Event(
         "Rentrée",
@@ -309,6 +323,17 @@ EVENTS: list[Event] = sorted((
         """,
         date(2026, NOVEMBER, 1), date(2026, NOVEMBER, 2),
         Labels.MEXICO
+    ),
+
+    Event(
+        "Algerian Revolution",
+        """
+        Commemorates the outbreak of the Algerian War of Independence on November 1, 1954. 
+        Launched by the FLN it was also known as Toussaint Rouge before becoming a celebration of Algerian independence.
+        Greet others with "Tahya El Djazair!" (Long live Algeria).
+        """,
+        ALGERIAN_REVOLUTION_DAY,
+        Labels.ALGERIA
     ),
 
     Event(

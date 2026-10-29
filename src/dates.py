@@ -64,6 +64,7 @@ next_year = date(today.year + 1, JANUARY, 1)
 
 # Holiday calendars
 year = today.year
+algeria = holidays.Algeria(years=year, language='en_US', categories=holidays.Algeria.supported_categories)
 china = holidays.China(years=year, language='en_US')
 france = holidays.France(years=year)
 hongkong = holidays.HongKong(years=year, language='en_US')
@@ -73,11 +74,13 @@ mexico = holidays.Mexico(years=year, language='en_US')
 us = holidays.UnitedStates(years=year)
 
 # Popular dates
+YENNAYER = min(algeria.get_named('Amazigh New Year'))
 LABOR_DAY: date = min(us.get_named("Labor Day"))
 ROSH_HASHANAH = min_max(israel.get_named("Rosh Hashanah"))
 MID_AUTUMN_FESTIVAL: date = min(china.get_named('Mid-Autumn Festival'))
 SUKKOT = min_max(israel.get_named('Sukkot'))
 GOLDEN_WEEK = Span(min(china.get_named('National Day')), days=7)
+ALGERIAN_REVOLUTION_DAY = min(algeria.get_named('Revolution Day'))
 ARMISTICE: date = min(france.get_named("Armistice"))
 BEAUJOLAIS = third(year, NOVEMBER, THURSDAY)
 PHILOSOPHY = third(year, NOVEMBER, THURSDAY)
@@ -92,6 +95,7 @@ SANTO_STEFANO: date = min(italy.get_named('Santo Stefano'))
 NEW_YEAR: date = min(us.get_named('New Year'))
 
 __all__ = (
+    'ALGERIAN_REVOLUTION_DAY',
     'ARMISTICE',
     'BEAUJOLAIS',
     'BLACK_FRIDAY',
@@ -109,6 +113,7 @@ __all__ = (
     'SANT_AMBROGIO',
     'SUKKOT',
     'THANKSGIVING',
+    'YENNAYER',
     'day_after_tomorrow',
     'day_before_yesterday',
     'month_after_next',
