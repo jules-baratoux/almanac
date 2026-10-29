@@ -2,28 +2,36 @@
 name = "almanac"
 description = "Almanac of popular events."
 readme = "README.md"
-requires-python = ">=3.12"
+
+# Requires Python 3.12+ for PEP 695 type parameter syntax.
+# Capped below Python 3.14 due to stack measurement check issues with beartype.
+# Remove `pythonbackport-sentinel` when upgrading to 3.15+
+requires-python = ">=3.12, <3.14"
+
 dynamic = ["version"]
 authors = [
     { name = "Jules Baratoux", email = "jules.baratoux+almanac@gmail.com" }
 ]
 dependencies = [
-    "flet~=1.0",
-    "pydantic~=2.1",
-    "pysbd>=0.3.4",
+    "annotated-types>=0.8.0",
+    "beartype>=0.23.1",
+    "flet==1.1.0.dev2",
+    "holidays>=0.107",
+    "pythonbackport-sentinel>=0.1.0",
 ]
 
 [dependency-groups]
 dev = [
-    "flet-cli~=1.0",
-    "flet-desktop~=1.0",
-    "flet-web~=1.0",
-    "flet[test]~=1.0",
+    "faker>=40.43.0",
+    "flet-cli==1.1.0.dev2",
+    "flet-desktop==1.1.0.dev2",
+    "flet-web==1.1.0.dev2",
+    "flet[test]==1.1.0.dev2",
     "pytest~=9.1",
 ]
 
 [tool.pytest.ini_options]
-addopts = "--doctest-modules"
+addopts = "--doctest-modules --capture=tee-sys --show-capture=all --log-cli-level=INFO"
 asyncio_mode = "auto"
 testpaths = ["tests"]
 pythonpath = ["src"]
