@@ -1,17 +1,18 @@
 import re
+from datetime import date, timedelta
 from enum import IntEnum
-from typing import Iterable, Optional
+from typing import Optional, Sequence
 
 import flet
 from flet import (
     Alignment,
-    Column,
+    ColorValue, Column,
     Container,
     ControlEventHandler,
     CrossAxisAlignment,
     FontWeight,
     GestureDetector,
-    ListView,
+    Icon, Icons, ListView,
     MainAxisAlignment,
     Margin,
     MouseCursor,
@@ -24,7 +25,8 @@ from flet import (
 )
 
 import grouper
-from events import EVENTS, Event
+import natural
+from events import EVENTS, Event, Labels
 from floating_action import FloatingAction
 
 
@@ -111,21 +113,36 @@ async def main(page: Page):
                         expand=True,
                         spacing=15,
                         controls=[
-                            event_card(*event, color=get_event_color(event)) for event in events
+                            event_card(event) for event in events
                         ]
                     )
                 ]
             )
 
-        def get_event_color(event: Event):
+        def get_event_date(start: date, end: date) -> str:
+            if (end - start) > timedelta(days=1):
+                span = f"{natural.date(start)} – {natural.date(end)}"
+            else:
+                span = natural.date(start)
+            return span
+
+        def get_event_color(labels: Sequence[Labels]):
             try:
-                label = event.labels[0]
+                label = labels[0]
             except IndexError:
                 return Colors.WHITE_10P
             else:
                 return getattr(Colors, label.name)
 
-        def event_card(title: str, span: str, description: str, labels: Iterable[str], color):
+        def event_card(event: Event):
+
+            title: str = event.title
+            span = get_event_date(event.start, event.end)
+            description: str = event.description
+            color: ColorValue = get_event_color(event.labels)
+
+            people: str = natural.number(event.people)
+
             def label_card(value: str):
                 async def on_tap(e: flet.Event[GestureDetector]):
                     await on_label_tap(flet.ControlEvent(e.name, data=text.value, control=text))
@@ -149,7 +166,7 @@ async def main(page: Page):
                 padding=event_card_padding,
                 margin=Margin.only(right=day_row_horizontal_margin),
                 content=Column(
-                    spacing=0,
+                    spacing=4,
                     controls=[
                         Column(
                             spacing=10,
@@ -161,7 +178,24 @@ async def main(page: Page):
                         ),
                         Row(
                             alignment=MainAxisAlignment.END,
-                            controls=[label_card(label) for label in labels]
+                            controls=[
+                                Row(
+                                    controls=[
+                                        Icon(
+                                            Icons.PEOPLE_ALT, color=Colors.WHITE_10P, size=14
+                                        ),
+                                        Text(
+                                            value=people,
+                                            color=Colors.WHITE_50P,
+                                            size=FontSize.SMALL,
+                                            weight=FontWeight.W_600,
+                                        ),
+                                    ],
+                                    spacing=6,
+                                    vertical_alignment=CrossAxisAlignment.CENTER,
+                                ),
+                                *(label_card(label.value) for label in event.labels)
+                            ]
                         )
                     ]
                 )

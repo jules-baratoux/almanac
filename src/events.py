@@ -6,10 +6,10 @@ from datetime import date, timedelta
 from enum import Enum
 from typing import Annotated, Literal, Sequence
 
-import natural
 from annotated import Field
 from dates import *
 from dispatch import overload
+from stats import amazigh_people, ehd_participants, french_people, jews, observant_jews, us_workers
 
 type Title = Annotated[
     Literal[
@@ -144,15 +144,6 @@ class Event:
     def __lt__(self, other: Event) -> bool:
         return self.end < other.end if self.start == other.start else self.start < other.start
 
-    def __iter__(self):
-        yield self.title
-        if (self.end - self.start) > timedelta(days=1):
-            yield f"{natural.date(self.start)} – {natural.date(self.end)}"
-        else:
-            yield natural.date(self.start)
-        yield self.description
-        yield tuple(label.value for label in self.labels)
-
 
 EVENTS: list[Event] = sorted((
 
@@ -176,6 +167,7 @@ EVENTS: list[Event] = sorted((
         Wear smart professional or fresh school attire, stock up on new stationery,
         and greet colleagues with a cheerful "Bonne rentrée!"
         """,
+        17_000_000,
         Labels.FRANCE
     ),
 
@@ -187,6 +179,7 @@ EVENTS: list[Event] = sorted((
         Wear casual weekend clothes or patriotic colors, bring grilled food and drinks for a backyard cookout,
         and enjoy a relaxing day off!
         """,
+        us_workers,
         Labels.USA
     ),
 
@@ -198,6 +191,7 @@ EVENTS: list[Event] = sorted((
         Wear smart holiday attire, dip apples in honey,
         and greet friends with "Shana Tova U'Metuka" for a sweet year ahead.
         """,
+        jews,
         Labels.ISRAEL
     ),
 
@@ -209,6 +203,7 @@ EVENTS: list[Event] = sorted((
         Wear a geeky tech T-shirt and bring pizza, coffee, or cupcakes to share.
         Greet colleagues with "Happy Programmer's Day!", thank your dev team, and never deploy on a Friday!
         """,
+        30_000_000,
         Labels.POP
     ),
 
@@ -220,6 +215,7 @@ EVENTS: list[Event] = sorted((
         The Council of Europe launched the initiative in 1985, and in 1999 was joined by the European Union.
         The Programme generates the greatest value, Euro for Euro, of any “European” cultural project.
         """,
+        ehd_participants,
         Labels.FRANCE
     ),
 
@@ -231,6 +227,7 @@ EVENTS: list[Event] = sorted((
         Wear white or modest comfortable clothing, fast for 25 hours,
         and greet others with wishes for an easy and meaningful fast.
         """,
+        observant_jews,
         Labels.ISRAEL
     ),
 
@@ -242,6 +239,7 @@ EVENTS: list[Event] = sorted((
         Wear cozy hobbit-inspired or casual outdoor attire, bring hearty food and drinks,
         and greet fans with a joyful "Happy Hobbit Day!"
         """,
+        2_000_000,
         Labels.POP
     ),
 
@@ -254,6 +252,7 @@ EVENTS: list[Event] = sorted((
         Greet others with "Happy Mid-Autumn Festival," express gratitude for family togetherness,
         and enjoy admiring the glowing lanterns.
         """,
+        1_000_000_000,
         Labels.CHINA
     ),
 
@@ -265,6 +264,7 @@ EVENTS: list[Event] = sorted((
         Dine under the leafy roof of a sukkah, and wave the lulav and etrog with gratitude.
         Welcome guests cheerfully with "Chag Sameach" and enjoy communal celebration under the stars!
         """,
+        observant_jews,
         Labels.ISRAEL
     ),
 
@@ -277,6 +277,7 @@ EVENTS: list[Event] = sorted((
         Greet friends with "Happy National Day," be respectful during flag-raising ceremonies,
         and enjoy a joyous holiday week!
         """,
+        1_300_000_000,
         Labels.CHINA
     ),
 
@@ -288,6 +289,7 @@ EVENTS: list[Event] = sorted((
         Wear comfortable outdoor attire for climbing heights, bring chrysanthemum wine,
         and greet elders respectfully wishing them health and longevity.
         """,
+        100_000_000,
         Labels.CHINA
     ),
 
@@ -299,6 +301,7 @@ EVENTS: list[Event] = sorted((
         Wear a lab coat or a mole-themed shirt and bring guacamole or mole-shaped treats.
         Greet fellow chemists with "Happy Mole Day!", share a chemistry pun, and keep experiments safe.
         """,
+        1_000_000,
         Labels.POP
     ),
 
@@ -310,6 +313,7 @@ EVENTS: list[Event] = sorted((
         MEPs voted but failed to abolish it due to Covid-19. Clocks fall back at 3am to 2am.
         Enjoy an extra hour of sleep and see you in March!
         """,
+        french_people,
         Labels.FRANCE
     ),
 
@@ -322,6 +326,7 @@ EVENTS: list[Event] = sorted((
         Greet people with a playful "Happy Halloween", practice polite trick-or-treating etiquette,
         and enjoy the festive thrills!
         """,
+        375_000_000,
     ),
 
     Event(
@@ -332,6 +337,7 @@ EVENTS: list[Event] = sorted((
         Wear colorful festive clothing or skeleton makeup, bring sugar skulls or pan de muerto,
         and greet others remembering ancestors with joy.
         """,
+        100_000_000,
         Labels.MEXICO
     ),
 
@@ -343,6 +349,7 @@ EVENTS: list[Event] = sorted((
         Launched by the FLN it was also known as Toussaint Rouge before becoming a celebration of Algerian independence.
         Greet others with "Tahya El Djazair!" (Long live Algeria).
         """,
+        46_000_000,
         Labels.ALGERIA
     ),
 
@@ -353,6 +360,7 @@ EVENTS: list[Event] = sorted((
         Commemorates the armistice signed between the Allies of World War I and Germany.
         Wear respectful dark attire, observe a moment of silence at the 11th hour, and reflect on peace and remembrance.
         """,
+        100_000_000,
         Labels.FRANCE
     ),
 
@@ -365,6 +373,7 @@ EVENTS: list[Event] = sorted((
         Greet guests with "Le Beaujolais Nouveau est arrivé!," sip mindfully with local cheese,
         and enjoy a lively bistro atmosphere.
         """,
+        10_000_000,
         Labels.FRANCE
     ),
 
@@ -376,6 +385,7 @@ EVENTS: list[Event] = sorted((
         Bring thought-provoking question to share, be open-minded.
         Greet others with "Happy World Philosophy Day," listen curiously, and debate kindly and respectfully!
         """,
+        5_000_000,
         Labels.POP
     ),
 
@@ -387,6 +397,7 @@ EVENTS: list[Event] = sorted((
         Bring a side dish or bottle of wine, and come hungry for turkey, stuffing, and pie!
         Say "Happy Thanksgiving," remember to compliment the cook, and enjoy a warm, joyful feast with loved ones.
         """,
+        250_000_000,
         Labels.USA
     ),
 
@@ -398,6 +409,7 @@ EVENTS: list[Event] = sorted((
         Wear comfortable walking shoes and casual layers, and bring your shopping list and patience.
         Greet fellow shoppers politely, practice good line etiquette, and score some wonderful gifts!
         """,
+        200_000_000,
         Labels.USA
     ),
 
@@ -409,6 +421,7 @@ EVENTS: list[Event] = sorted((
         Wear comfy loungewear, have your payment details ready, and keep a wish list handy.
         Share great find links with friends cheerfully, stay secure online, and enjoy stress-free holiday browsing.
         """,
+        100_000_000,
         Labels.POP
     ),
 
@@ -420,6 +433,7 @@ EVENTS: list[Event] = sorted((
         Wear festive attire, light the menorah each evening, enjoy latkes and sufganiyot,
         and greet friends with "Happy Hanukkah."
         """,
+        12_000_000,
         Labels.ISRAEL
     ),
 
@@ -430,6 +444,7 @@ EVENTS: list[Event] = sorted((
         Honors Milan's patron saint with festive celebrations and the opening of the La Scala opera season.
         Wear elegant evening attire, enjoy local panettone, and greet guests warmly with Italian festive cheer.
         """,
+        1_400_000,
         Labels.ITALY
     ),
 
@@ -441,6 +456,7 @@ EVENTS: list[Event] = sorted((
         Wear smart casual attire, attend church services or local light displays,
         and greet others with peaceful holiday blessings.
         """,
+        50_000_000,
         Labels.ITALY
     ),
 
@@ -453,6 +469,7 @@ EVENTS: list[Event] = sorted((
         Greet family with warm wishes for health, gather closely by the hearth,
         and celebrate the peaceful turning of the seasons.
         """,
+        1_000_000_000,
     ),
 
     Event(
@@ -463,6 +480,7 @@ EVENTS: list[Event] = sorted((
         Bring beautifully wrapped gifts or a holiday treat like cookies.
         Greet others warmly with "Merry Christmas" and share in the joy.
         """,
+        2_400_000_000,
     ),
 
     Event(
@@ -472,6 +490,7 @@ EVENTS: list[Event] = sorted((
         Celebrates Saint Stephen's Day in Italy with family gatherings and festive leftovers.
         Wear cozy winter clothes, relax at home or stroll town lights, and greet loved ones with warm holiday wishes.
         """,
+        55_000_000,
         Labels.ITALY
     ),
 
@@ -483,6 +502,7 @@ EVENTS: list[Event] = sorted((
         Wear sparkling, celebratory evening attire and bring a toast beverage or party snacks.
         Greet friends with "Happy New Year!", countdown with enthusiasm, and celebrate safely into the night.
         """,
+        4_000_000_000,
     ),
 
 ))

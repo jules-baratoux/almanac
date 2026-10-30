@@ -1,6 +1,8 @@
 import datetime
 from typing import Literal
 
+from millify import millify
+
 
 def date_from(today: datetime.date):
     tomorrow = today + datetime.timedelta(days=1)
@@ -66,3 +68,21 @@ def date(value: datetime.date) -> Literal["today", "tomorrow", "yesterday"] | st
 
 
 globals()[date.__name__] = date_from(today=datetime.date.today())
+
+
+def number(value: int | float) -> str:
+    """
+    >>> number(1_000_000_000)
+    '1B'
+
+    >>> number(1_000_000)
+    '1M'
+
+    >>> number(1_550)
+    '1.6K'
+
+    >>> number(1_500)
+    '1.5K'
+    """
+    text = millify(value, precision=1).upper()
+    return text
