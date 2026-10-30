@@ -1,7 +1,7 @@
 from calendar import Day, JANUARY, Month, NOVEMBER, THURSDAY, monthrange
 from datetime import date, timedelta
 from functools import partial
-from typing import Annotated, Sequence
+from typing import Annotated
 
 import holidays
 
@@ -44,12 +44,6 @@ def weekday(year: int, month: Month, weekday: Day,
 third = partial(weekday, index=2)
 
 
-def min_max(sequence: Sequence[date]):
-    start = min(sequence)
-    end = max(sequence)
-    return Span(start, end)
-
-
 # Named relative dates
 today = date.today()
 yesterday = today - timedelta(days=1)
@@ -76,9 +70,9 @@ us = holidays.UnitedStates(years=year)
 # Popular dates
 YENNAYER = min(algeria.get_named('Amazigh New Year'))
 LABOR_DAY: date = min(us.get_named("Labor Day"))
-ROSH_HASHANAH = min_max(israel.get_named("Rosh Hashanah"))
+ROSH_HASHANAH = israel.get_named("Rosh Hashanah")
 MID_AUTUMN_FESTIVAL: date = min(china.get_named('Mid-Autumn Festival'))
-SUKKOT = min_max(israel.get_named('Sukkot'))
+SUKKOT = israel.get_named('Sukkot')
 GOLDEN_WEEK = Span(min(china.get_named('National Day')), days=7)
 ALGERIAN_REVOLUTION_DAY = min(algeria.get_named('Revolution Day'))
 ARMISTICE: date = min(france.get_named("Armistice"))
@@ -87,7 +81,7 @@ PHILOSOPHY = third(year, NOVEMBER, THURSDAY)
 THANKSGIVING: date = min(us.get_named("Thanksgiving"))
 BLACK_FRIDAY = THANKSGIVING + timedelta(days=1)
 CYBER_MONDAY = BLACK_FRIDAY + timedelta(days=3)
-HANUKKAH = min_max(israel.get_named("Hanukkah"))
+HANUKKAH = israel.get_named("Hanukkah")
 SANT_AMBROGIO: date = min(italy.get_named("Sant'Ambrogio"))
 IMMACOLATA_CONCEZIONE: date = min(italy.get_named("Immacolata Concezione"))
 CHRISTMAS: date = min(us.get_named('Christmas Day'))
