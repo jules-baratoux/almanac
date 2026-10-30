@@ -1,6 +1,8 @@
+import os
 import re
 from datetime import date, timedelta
 from enum import IntEnum
+from pathlib import Path
 from typing import Optional, Sequence
 
 import flet
@@ -68,6 +70,11 @@ class Colors:
     USA = STORM
 
 
+def get_assets_dir() -> Path:
+    default_assets_dir = Path(__file__).parent / "assets"  # fallback for local runs
+    return Path(os.environ.get("FLET_ASSETS_DIR", str(default_assets_dir))).resolve()
+
+
 async def main(page: Page):
     page.title = "Almanac"
     page.bgcolor = "#1e1f21"
@@ -83,6 +90,9 @@ async def main(page: Page):
 
     unfiltered_event_list = EVENTS
     displayed_event_list = unfiltered_event_list
+
+    assets_dir = get_assets_dir()
+    images_dir = assets_dir / 'images'
 
     def periode_view(title: str, days, on_label_tap: Optional[ControlEventHandler] = None):
         event_card_padding = Padding.all(20)
@@ -142,6 +152,14 @@ async def main(page: Page):
             color: ColorValue = get_event_color(event.labels)
             people: str = natural.number(event.people)
 
+            # todo: Move this to a property of a subclass of Event like color
+            #   to construct once during initialization of the ListView
+            image = event.image or next(
+                (path.relative_to(assets_dir).as_posix() for path in images_dir.iterdir() if
+                 path.stem.casefold() == title.casefold()),
+                None
+            )
+
             def label_card(value: str):
                 async def on_tap(e: flet.Event[GestureDetector]):
                     await on_label_tap(flet.ControlEvent(e.name, data=text.value, control=text))
@@ -159,7 +177,7 @@ async def main(page: Page):
                 )
 
             return Container(
-                image=DecorationImage(event.image, opacity=.1, fit=BoxFit.COVER) if event.image else None,
+                image=DecorationImage(image, opacity=.1, fit=BoxFit.COVER) if image else None,
                 bgcolor=color,
                 expand=True,
                 border_radius=30,
