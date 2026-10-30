@@ -19,6 +19,10 @@ observant_jews = jews * (.4 * .72 + .6 * .55)
 us_workers = 109.5 * million
 
 # 2026
+# https://worldpopulationreview.com/countries/united-states
+us_population = 349_603_710
+
+# 2026
 # https://www.europeanheritagedays.com/EHD-Programme/About/About-Us
 ehd_participants = 20 * million
 

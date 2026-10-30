@@ -9,7 +9,7 @@ from typing import Annotated, Literal, Sequence
 from annotated import Field
 from dates import *
 from dispatch import overload
-from stats import amazigh_people, ehd_participants, french_people, jews, observant_jews, us_workers
+from stats import amazigh_people, ehd_participants, french_people, jews, observant_jews, us_population, us_workers
 
 type Title = Annotated[
     Literal[
@@ -405,9 +405,8 @@ EVENTS: list[Event] = sorted((
         Bring a side dish or bottle of wine, and come hungry for turkey, stuffing, and pie!
         Say "Happy Thanksgiving," remember to compliment the cook, and enjoy a warm, joyful feast with loved ones.
         """,
-        250_000_000,
-        Labels.USA,
-        image='images/thanksgiving.jpg',
+        us_population,
+        Labels.USA
     ),
 
     Event(
