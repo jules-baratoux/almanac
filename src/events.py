@@ -216,9 +216,9 @@ EVENTS: list[Event] = sorted((
         "European Heritage Days",
         date(2026, SEPTEMBER, 19), date(2026, SEPTEMBER, 20),
         """
-        Opens cultural monuments and historic sites to the public for free exploration.
-        Wear comfortable walking shoes, bring a camera,
-        and greet guides politely while discovering fascinating architectural heritage.
+        The European Heritage Days are the most widely celebrated participatory cultural event shared by the people of Europe.
+        The Council of Europe launched the initiative in 1985, and in 1999 was joined by the European Union.
+        The Programme generates the greatest value, Euro for Euro, of any “European” cultural project.
         """,
         Labels.FRANCE
     ),
