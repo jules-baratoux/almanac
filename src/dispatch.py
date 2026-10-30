@@ -4,9 +4,13 @@ import typing
 from abc import ABC, abstractmethod
 from functools import cached_property
 from typing import Any, Callable, Mapping, Sequence, cast
+from warnings import filterwarnings
 
 from beartype.bite import infer_hint
 from beartype.door import is_bearable
+from beartype.roar import BeartypeDecorHintPep585DeprecationWarning
+
+filterwarnings(action="ignore", category=BeartypeDecorHintPep585DeprecationWarning)
 
 
 def get_annotation(value) -> str:
