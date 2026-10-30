@@ -6,11 +6,11 @@ from typing import Optional, Sequence
 import flet
 from flet import (
     Alignment,
-    ColorValue, Column,
+    BoxFit, ColorValue, Column,
     Container,
     ControlEventHandler,
     CrossAxisAlignment,
-    FontWeight,
+    DecorationImage, FontWeight,
     GestureDetector,
     Icon, Icons, ListView,
     MainAxisAlignment,
@@ -140,7 +140,6 @@ async def main(page: Page):
             span = get_event_date(event.start, event.end)
             description: str = event.description
             color: ColorValue = get_event_color(event.labels)
-
             people: str = natural.number(event.people)
 
             def label_card(value: str):
@@ -160,6 +159,7 @@ async def main(page: Page):
                 )
 
             return Container(
+                image=DecorationImage(event.image, opacity=.1, fit=BoxFit.COVER) if event.image else None,
                 bgcolor=color,
                 expand=True,
                 border_radius=30,

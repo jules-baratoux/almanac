@@ -98,6 +98,9 @@ class Labels(Enum):
     USA = "USA"
 
 
+type Image = Annotated[str | bytes, Field(description="Background image for the event")]
+
+
 class Event:
 
     @overload
@@ -109,6 +112,7 @@ class Event:
             description: Description,
             people: People,
             *labels: Labels,
+            image: Image | None = None,
     ):
         self.title = title.strip()
         self.description = re.sub(r"\s+", " ", description.strip())
@@ -116,6 +120,7 @@ class Event:
         self.end = end
         self.people = people
         self.labels = labels
+        self.image = image
 
     @overload
     def __init__(
@@ -125,8 +130,9 @@ class Event:
             description: Description,
             people: People,
             *labels: Labels,
+            image: Image | None = None,
     ):
-        self.__init__(title, start, start + timedelta(days=1), description, people, *labels)
+        self.__init__(title, start, start + timedelta(days=1), description, people, *labels, image=image)
 
     @overload
     def __init__(
@@ -136,10 +142,11 @@ class Event:
             description: Description,
             people: People,
             *labels: Labels,
+            image: Image | None = None,
     ):
         start: Date = min(dates)
         end: Date = max(dates)
-        self.__init__(title, start, end, description, people, *labels)
+        self.__init__(title, start, end, description, people, *labels, image=image)
 
     def __lt__(self, other: Event) -> bool:
         return self.end < other.end if self.start == other.start else self.start < other.start
@@ -327,6 +334,7 @@ EVENTS: list[Event] = sorted((
         and enjoy the festive thrills!
         """,
         375_000_000,
+        image="https://t2.gstatic.com/licensed-image?q=tbn:ANd9GcTCz6CcOst0oqvKKpWGRZVEon5PsuarJsTDohTM16qcRe6_ftruUS7b-U7ePRHn60an",
     ),
 
     Event(
@@ -398,7 +406,8 @@ EVENTS: list[Event] = sorted((
         Say "Happy Thanksgiving," remember to compliment the cook, and enjoy a warm, joyful feast with loved ones.
         """,
         250_000_000,
-        Labels.USA
+        Labels.USA,
+        image='images/thanksgiving.jpg',
     ),
 
     Event(
