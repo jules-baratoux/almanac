@@ -77,6 +77,11 @@ type Days = Annotated[int, Field(
     ge=1)
 ]
 
+type People = Annotated[int | float, Field(
+    description="An estimated amount of people celebrating the event worldwide.",
+    ge=1)
+]
+
 
 class Labels(Enum):
     """Labels associated with an event."""
@@ -102,12 +107,14 @@ class Event:
             start: Date,
             end: Date,
             description: Description,
+            people: People,
             *labels: Labels,
     ):
         self.title = title.strip()
         self.description = re.sub(r"\s+", " ", description.strip())
         self.start = start
         self.end = end
+        self.people = people
         self.labels = labels
 
     @overload
@@ -116,9 +123,10 @@ class Event:
             title: Title,
             start: Date,
             description: Description,
+            people: People,
             *labels: Labels,
     ):
-        self.__init__(title, start, start + timedelta(days=1), description, *labels)
+        self.__init__(title, start, start + timedelta(days=1), description, people, *labels)
 
     @overload
     def __init__(
@@ -126,11 +134,12 @@ class Event:
             title: Title,
             dates: Sequence[Date],
             description: Description,
+            people: People,
             *labels: Labels,
     ):
         start: Date = min(dates)
         end: Date = max(dates)
-        self.__init__(title, start, end, description, *labels)
+        self.__init__(title, start, end, description, people, *labels)
 
     def __lt__(self, other: Event) -> bool:
         return self.end < other.end if self.start == other.start else self.start < other.start
@@ -155,6 +164,7 @@ EVENTS: list[Event] = sorted((
         Wear traditional Kabyle dress or silver jewelry, and share couscous, berkoukes, dried fruits and sweets.
         Greet others warmly with "Aseggas Ameggaz!" for a happy and prosperous new year.
         """,
+        amazigh_people,
         Labels.ALGERIA
     ),
 
