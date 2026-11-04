@@ -127,4 +127,4 @@ __all__ = (
 
 
 def test_import():
-    pass
+    assert __all__, "Module did not import correctly"
