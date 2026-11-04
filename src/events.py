@@ -6,24 +6,17 @@ from datetime import date, timedelta
 from enum import Enum
 from typing import Annotated, Sequence
 
-from annotated import Field
+from annotated_types import Ge, Interval, MaxLen
+
 from dates import *
 from dispatch import overload
 from stats import amazigh_people, ehd_participants, french_people, jews, observant_jews, us_population, us_workers
 
-type Title = Annotated[str, Field(
-    description='The name of the event.',
-    examples=[
-        "Christmas",
-        "Hanukkah",
-        "Thanksgiving",
-        "Towel day",
-    ])
-]
+type Title = Annotated[str, "Christmas", "Hanukkah", "Thanksgiving", "Towel day", ...]
+"""The name of the event."""
 
-type Description = Annotated[str, Field(
-    max_length=350,
-    description="""
+type Description = Annotated[str, MaxLen(350)]
+"""
 A 300-character guide for attending guests.
 
 Covers:
@@ -33,23 +26,15 @@ Covers:
 
 Tone: Helpful, sweet, clear, and action-oriented.
 """
-)]
 
-type Date = Annotated[date, Field(
-    description="When a event starts or stops.",
-    ge=date(2026, 1, 1),
-    le=date(2027, 1, 13)
-)]
+type Date = Annotated[date, Interval(ge=date(2026, 1, 1), le=date(2027, 1, 13))]
+"""When a event starts or stops."""
 
-type Days = Annotated[int, Field(
-    description="The duration of an event in days.",
-    ge=1)
-]
+type Days = Annotated[int, Ge(1)]
+"""The duration of an event in days."""
 
-type People = Annotated[int | float, Field(
-    description="An estimated amount of people celebrating the event worldwide.",
-    ge=1)
-]
+type People = Annotated[int | float, Ge(1)]
+"""An estimated amount of people celebrating the event worldwide."""
 
 
 class Labels(Enum):

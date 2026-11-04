@@ -4,9 +4,9 @@ from functools import partial
 from typing import Annotated
 
 import holidays
+from annotated_types import Doc, Gt, Interval
 from dateutil.relativedelta import relativedelta
 
-from annotated import Field
 from dispatch import overload
 
 
@@ -20,7 +20,7 @@ class Span:
         self.end = end
 
     @overload
-    def __init__(self, start: date, days: Annotated[int, Field(gt=1, description="Total amount of days")]):
+    def __init__(self, start: date, days: Annotated[int, Gt(1), Doc("Total amount of days")]):
         self.start = start
         self.end = start + timedelta(days=days - 1)
 
@@ -30,7 +30,7 @@ class Span:
 
 
 def weekday(year: int, month: Month, weekday: Day,
-            index: Annotated[int, Field(ge=0, le=5, description="Index of weekday in the month")]):
+            index: Annotated[int, Interval(ge=0, le=5), Doc("Index of weekday in the month")]):
     first_weekday, _ = monthrange(year, month)
 
     # Calculate offset to the first occurrence
@@ -59,8 +59,11 @@ next_year = today + relativedelta(years=1, month=JANUARY, day=1)
 # Calendars
 year: int = today.year
 algeria = holidays.Algeria(years=year, language='en_US', categories=holidays.Algeria.supported_categories)
+canada = holidays.Canada(years=year, language='en_US', categories=holidays.Canada.supported_categories)
 china = holidays.China(years=year, language='en_US')
-france = holidays.France(years=year)
+france = holidays.France(years=year, categories=holidays.France.supported_categories)
+france._add_childrens_day("Children's Day", "NOV")
+
 hongkong = holidays.HongKong(years=year, language='en_US')
 israel = holidays.Israel(years=year, language='en_US', categories=('optional', 'public', 'school'))
 italy = holidays.Italy(years=year, subdiv="MI")
@@ -72,7 +75,7 @@ ALGERIAN_REVOLUTION_DAY = min(algeria.get_named('Revolution Day'))
 ARMISTICE: date = min(france.get_named("Armistice"))
 BEAUJOLAIS = third(year, NOVEMBER, THURSDAY)
 BLACK_FRIDAY = (THANKSGIVING := min(us.get_named("Thanksgiving"))) + timedelta(days=1)
-CHILDRENS_DAY = min(france.get_named("Children's Day"))
+UN_CHILDRENS_DAY = min(france.get_named("Children's Day"))
 CHRISTMAS: date = min(us.get_named('Christmas Day'))
 CYBER_MONDAY = BLACK_FRIDAY + timedelta(days=3)
 GOLDEN_WEEK = Span(min(china.get_named('National Day')), days=7)
@@ -93,7 +96,7 @@ __all__ = (
     'ARMISTICE',
     'BEAUJOLAIS',
     'BLACK_FRIDAY',
-    'CHILDRENS_DAY',
+    'UN_CHILDRENS_DAY',
     'CHRISTMAS',
     'CYBER_MONDAY',
     'GOLDEN_WEEK',
@@ -121,3 +124,7 @@ __all__ = (
     'year',
     'yesterday',
 )
+
+
+def test_import():
+    pass
