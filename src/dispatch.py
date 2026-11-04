@@ -46,12 +46,30 @@ def yield_arguments(*args, **kwargs):
 
 
 class Overload:
-    def __init__(self, func: Callable):
+    def __init__(self, func):
         functools.update_wrapper(self, func)
         self.__func__ = func
         self.signature = inspect.signature(func)
-        self.hints = typing.get_type_hints(func)
-        self.hints.pop("return", None)
+
+    @cached_property
+    def hints(self) -> dict[str, Any]:
+        globalns = self.__func__.__globals__
+        localns = dict(globalns)
+
+        owner = globalns
+        for part in self.__func__.__qualname__.split(".")[:-1]:
+            if part == "<locals>":
+                continue
+
+            owner = owner.get(part) if isinstance(owner, dict) else getattr(owner, part, None)
+            if owner is None:
+                break
+
+            localns[part] = owner
+
+        hints = typing.get_type_hints(self.__func__, globalns=globalns, localns=localns)
+        hints.pop("return", None)
+        return hints
 
     def __call__(self, *args, **kwargs):
         return self.__func__(*args, **kwargs)

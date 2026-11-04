@@ -1,8 +1,6 @@
-import os
 import re
 from datetime import date, timedelta
 from enum import IntEnum
-from pathlib import Path
 from typing import Optional, Sequence
 
 import flet
@@ -25,11 +23,13 @@ from flet import (
     Text, ThemeMode,
     run,
 )
+from slugify import slugify
 
 import grouper
 import natural
 from events import EVENTS, Event, Labels
 from floating_action import FloatingAction
+from values import paths
 
 
 class FontSize(IntEnum):
@@ -70,9 +70,15 @@ class Colors:
     USA = STORM
 
 
-def get_assets_dir() -> Path:
-    default_assets_dir = Path(__file__).parent / "assets"  # fallback for local runs
-    return Path(os.environ.get("FLET_ASSETS_DIR", str(default_assets_dir))).resolve()
+def get_event_image(event: Event) -> str | bytes | None:
+    return next(
+        (
+            path.relative_to(paths.assets).as_posix()
+            for path in paths.images.iterdir()
+            if slugify(path.stem) == slugify(event.title)
+        ),
+        None
+    )
 
 
 async def main(page: Page):
@@ -90,9 +96,6 @@ async def main(page: Page):
 
     unfiltered_event_list = EVENTS
     displayed_event_list = unfiltered_event_list
-
-    assets_dir = get_assets_dir()
-    images_dir = assets_dir / 'images'
 
     def periode_view(title: str, days, on_label_tap: Optional[ControlEventHandler] = None):
         event_card_padding = Padding.all(20)
@@ -154,11 +157,7 @@ async def main(page: Page):
 
             # todo: Move this to a property of a subclass of Event like color
             #   to construct once during initialization of the ListView
-            image = event.image or next(
-                (path.relative_to(assets_dir).as_posix() for path in images_dir.iterdir() if
-                 path.stem.casefold() == title.casefold()),
-                None
-            )
+            image = get_event_image(event)
 
             def label_card(value: str):
                 async def on_tap(e: flet.Event[GestureDetector]):

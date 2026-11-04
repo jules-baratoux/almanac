@@ -4,52 +4,21 @@ import re
 from calendar import DECEMBER, NOVEMBER, OCTOBER, SEPTEMBER
 from datetime import date, timedelta
 from enum import Enum
-from typing import Annotated, Literal, Sequence
+from typing import Annotated, Sequence
 
 from annotated import Field
 from dates import *
 from dispatch import overload
 from stats import amazigh_people, ehd_participants, french_people, jews, observant_jews, us_population, us_workers
 
-type Title = Annotated[
-    Literal[
-        "Algerian Revolution",
-        "Armistice",
-        "Beaujolais Nouveau",
-        "Black Friday",
+type Title = Annotated[str, Field(
+    description='The name of the event.',
+    examples=[
         "Christmas",
-        "Cyber Monday",
-        "Double Ninth Festival",
-        "Día de Muertos",
-        "European Heritage Days",
-        "Halloween",
         "Hanukkah",
-        "Heure d’hiver",
-        "Hobbit Day",
-        "Immacolata Concezione",
-        "Labor Day",
-        "Mid-Autumn Festival",
-        "Mole Day",
-        "National Day Golden Week",
-        "New Year's Eve",
-        "Pi Day",
-        "Programmer's Day",
-        "Rentrée",
-        "Rosh Hashanah",
-        "Sant'Ambrogio",
-        "Santo Stefano (Boxing Day)",
-        "Star Wars Day",
-        "Sukkot",
-        "Tau Day",
         "Thanksgiving",
         "Towel day",
-        "Winter Solstice",
-        "World Philosophy Day",
-        "Yennayer",
-        "Yom Kippur",
-        "e-Day",
-    ],
-    Field(description='The name of the event.', examples=["Thanksgiving", "Christmas"])
+    ])
 ]
 
 type Description = Annotated[str, Field(
@@ -68,7 +37,7 @@ Tone: Helpful, sweet, clear, and action-oriented.
 
 type Date = Annotated[date, Field(
     description="When a event starts or stops.",
-    ge=date(year, 9, 1),
+    ge=date(2026, 1, 1),
     le=date(2027, 1, 13)
 )]
 
@@ -98,9 +67,6 @@ class Labels(Enum):
     USA = "USA"
 
 
-type Image = Annotated[str | bytes, Field(description="Background image for the event")]
-
-
 class Event:
 
     @overload
@@ -112,7 +78,6 @@ class Event:
             description: Description,
             people: People,
             *labels: Labels,
-            image: Image | None = None,
     ):
         self.title = title.strip()
         self.description = re.sub(r"\s+", " ", description.strip())
@@ -120,7 +85,6 @@ class Event:
         self.end = end
         self.people = people
         self.labels = labels
-        self.image = image
 
     @overload
     def __init__(
@@ -130,9 +94,8 @@ class Event:
             description: Description,
             people: People,
             *labels: Labels,
-            image: Image | None = None,
     ):
-        self.__init__(title, start, start + timedelta(days=1), description, people, *labels, image=image)
+        self.__init__(title, start, start + timedelta(days=1), description, people, *labels)
 
     @overload
     def __init__(
@@ -142,11 +105,10 @@ class Event:
             description: Description,
             people: People,
             *labels: Labels,
-            image: Image | None = None,
     ):
         start: Date = min(dates)
         end: Date = max(dates)
-        self.__init__(title, start, end, description, people, *labels, image=image)
+        self.__init__(title, start, end, description, people, *labels)
 
     def __lt__(self, other: Event) -> bool:
         return self.end < other.end if self.start == other.start else self.start < other.start
@@ -334,7 +296,6 @@ EVENTS: list[Event] = sorted((
         and enjoy the festive thrills!
         """,
         375_000_000,
-        image="https://t2.gstatic.com/licensed-image?q=tbn:ANd9GcTCz6CcOst0oqvKKpWGRZVEon5PsuarJsTDohTM16qcRe6_ftruUS7b-U7ePRHn60an",
     ),
 
     Event(
@@ -362,11 +323,12 @@ EVENTS: list[Event] = sorted((
     ),
 
     Event(
-        "Armistice",
+        "Armistice Day",
         ARMISTICE,
         """
-        Commemorates the armistice signed between the Allies of World War I and Germany.
-        Wear respectful dark attire, observe a moment of silence at the 11th hour, and reflect on peace and remembrance.
+        Armistice Day, later known as Remembrance Day in the Commonwealth and Veterans Day in the United States,
+        mark the armistice signed between the Allies of World War I and Germany at Compiègne.
+        It took effect on the "eleventh hour of the eleventh day of the eleventh month" of 1918.
         """,
         100_000_000,
         Labels.FRANCE
@@ -395,6 +357,18 @@ EVENTS: list[Event] = sorted((
         """,
         5_000_000,
         Labels.POP
+    ),
+
+    Event(
+        "Children's Day",
+        date(2026, NOVEMBER, 20),
+        """
+        Celebrates children’s rights, joy, and well-being on World Children’s Day.
+        Wear bright, playful clothes, bring games, books, or treats to share,
+        and greet families with "Happy Children's Day!" Be kind, inclusive, and make children feel cherished.
+        """,
+        2_000_000_000,
+        Labels.FAMILY
     ),
 
     Event(
@@ -430,7 +404,6 @@ EVENTS: list[Event] = sorted((
         Share great find links with friends cheerfully, stay secure online, and enjoy stress-free holiday browsing.
         """,
         100_000_000,
-        Labels.POP
     ),
 
     Event(
@@ -449,7 +422,7 @@ EVENTS: list[Event] = sorted((
         "Sant'Ambrogio",
         SANT_AMBROGIO,
         """
-        Honors Milan's patron saint with festive celebrations and the opening of the La Scala opera season.
+        Honors Milan's patron Sant'Ambrogio with festive celebrations and the opening of the La Scala opera season.
         Wear elegant evening attire, enjoy local panettone, and greet guests warmly with Italian festive cheer.
         """,
         1_400_000,
