@@ -346,11 +346,11 @@ EVENTS: list[Event] = sorted((
 
     Event(
         "Children's Day",
-        date(2026, NOVEMBER, 20),
+        UN_CHILDRENS_DAY,
         """
-        Celebrates children’s rights, joy, and well-being on World Children’s Day.
-        Wear bright, playful clothes, bring games, books, or treats to share,
-        and greet families with "Happy Children's Day!" Be kind, inclusive, and make children feel cherished.
+        World Children's Day commemorates the issuance of the Declaration of the Rights of the Child
+        by the UN General Assembly on 20 November 1959, along with the adoption of
+        the Convention on the Rights of the Child on that date in 1989.
         """,
         2_000_000_000,
         Labels.FAMILY
