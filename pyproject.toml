@@ -38,6 +38,7 @@ addopts = "--doctest-modules --capture=tee-sys --show-capture=all --log-cli-leve
 asyncio_default_fixture_loop_scope = "function"
 asyncio_mode = "auto"
 testpaths = ["tests", "src"]
+python_files = ["*.py"]
 pythonpath = ["src"]
 markers = [
     "ui: Flet integration tests that launch the app host"
