@@ -34,19 +34,19 @@ jobs:
           uv run pytest -m "not ui"
 
       - name: Cache Flutter SDK
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        uses: actions/cache@v6
         with:
           path: ~/flutter/${{ steps.prepare.outputs.flutter-version }}
           key: flet-flutter-v1-${{ runner.os }}-${{ runner.arch }}-${{ steps.prepare.outputs.flutter-version }}
 
       - name: Cache Flet downloads
-        uses: actions/cache@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        uses: actions/cache@v6
         with:
           path: ~/.flet/cache
           key: flet-downloads-v1-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-${{ steps.prepare.outputs.flet-version }}-py${{ inputs.bundled-python-version || 'auto' }}
 
       - name: Cache Linux build dependencies
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: /var/cache/apt/archives
           key: ubuntu-apt-archives-${{ runner.os }}-${{ hashFiles(steps.prepare.outputs.linux-dependencies-file) }}
