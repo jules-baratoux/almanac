@@ -178,7 +178,6 @@ async def main(page: Page):
             return Container(
                 image=DecorationImage(image, opacity=.1, fit=BoxFit.COVER) if image else None,
                 bgcolor=color,
-                expand=True,
                 border_radius=30,
                 padding=event_card_padding,
                 margin=Margin.only(right=day_row_horizontal_margin),
