@@ -39,6 +39,9 @@ asyncio_default_fixture_loop_scope = "function"
 asyncio_mode = "auto"
 testpaths = ["tests", "src"]
 pythonpath = ["src"]
+markers = [
+    "ui: Flet integration tests that launch the app host"
+]
 
 [tool.flet]
 org = "fr.baratoux.jules"
