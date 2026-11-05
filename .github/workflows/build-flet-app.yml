@@ -92,3 +92,17 @@ jobs:
         uses: coactions/setup-xvfb@v1
         with:
           run: uv run flet test --yes
+
+      - name: Build APK
+        id: build
+        uses: flet-dev/flet-build-action@v1
+        with:
+          target: apk
+          build-number: ${{ github.run_number }}
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v7
+        with:
+          path: ${{ steps.build.outputs.archive-path }}
+          archive: false
+          if-no-files-found: error
