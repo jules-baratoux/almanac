@@ -249,7 +249,7 @@ async def main(page: Page):
 
         if query:
             search = re.compile(query, re.IGNORECASE).search
-            displayed_event_list = filter(lambda event: search(repr(tuple(event))), unfiltered_event_list)
+            displayed_event_list = filter(lambda event: search(repr(vars(event))), unfiltered_event_list)
         else:
             displayed_event_list = unfiltered_event_list
 
