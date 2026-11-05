@@ -15,7 +15,7 @@ authors = [
 dependencies = [
     "annotated-types>=0.8.0",
     "beartype>=0.23.1",
-    "flet==1.1.0.dev2",
+    "flet==1.1.0.dev4",
     "holidays>=0.107",
     "millify>=0.1.1",
     "python-dateutil>=2.9.0.post0",
@@ -26,10 +26,10 @@ dependencies = [
 [dependency-groups]
 dev = [
     "faker>=40.43.0",
-    "flet-cli==1.1.0.dev2",
-    "flet-desktop==1.1.0.dev2",
-    "flet-web==1.1.0.dev2",
-    "flet[test]==1.1.0.dev2",
+    "flet-cli==1.1.0.dev4",
+    "flet-desktop==1.1.0.dev4",
+    "flet-web==1.1.0.dev4",
+    "flet[test]==1.1.0.dev4",
     "pytest~=9.1",
 ]
 
