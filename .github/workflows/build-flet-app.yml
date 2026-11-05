@@ -46,6 +46,7 @@ jobs:
           key: flet-downloads-v1-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-${{ steps.prepare.outputs.flet-version }}-py${{ inputs.bundled-python-version || 'auto' }}
 
       - name: Cache Linux build dependencies
+        id: apt-cache
         uses: actions/cache@v6
         with:
           path: /var/cache/apt/archives
@@ -66,20 +67,26 @@ jobs:
             exit 1
           fi
           
+          # Combined check for APT cache miss
+          if [ "${{ steps.apt-cache.outputs.cache-hit }}" != "true" ]; then
+            echo "::warning::APT cache missed."
+          fi
+          
           mapfile -t packages < "$DEPENDENCIES_FILE"
           if [[ ${#packages[@]} -eq 0 ]]; then
             echo "::error::Flet did not report any Linux build dependencies."
             exit 1
           fi
+
+          # Ensure APT keeps downloaded packages so they can be cached
+          echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' | sudo tee /etc/apt/apt.conf.d/01keep-debs
           
           if [[ ${EUID} -eq 0 ]]; then
             apt-get update --allow-releaseinfo-change
             apt-get install -y --no-install-recommends "${packages[@]}"
-            apt-get clean
           elif command -v sudo >/dev/null 2>&1; then
             sudo apt-get update --allow-releaseinfo-change
             sudo apt-get install -y --no-install-recommends "${packages[@]}"
-            sudo apt-get clean
           else
             echo "::error::Linux dependency installation requires root or sudo. Set install-linux-dependencies to false and provision this runner manually."
             exit 1
