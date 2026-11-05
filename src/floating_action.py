@@ -24,7 +24,7 @@ from flet import (
 
 @dataclass
 class SearchBar(flet.SearchBar):
-    on_build: Optional[Callable[[], None]] = None
+    on_mounted: Optional[Callable[[], None]] = None
 
     async def change(self, value: str):
         if value == self.value:
@@ -33,9 +33,9 @@ class SearchBar(flet.SearchBar):
         self.value = value
         await self._trigger_event("change", value)
 
-    def build(self):
-        if self.on_build is not None:
-            self.on_build()
+    def did_mount(self):
+        if self.on_mounted is not None:
+            self.on_mounted()
 
 
 class FloatingAction:
@@ -102,7 +102,7 @@ class FloatingAction:
             animate_opacity=animate,
             animate_offset=animate,
             on_change=on_change,
-            on_build=self.build,
+            on_mounted=lambda: self.page.overlay.append(self.blur_sink),
         )
 
         self.expanded: bool = NotImplemented  # Force style application during initialization
@@ -147,9 +147,6 @@ class FloatingAction:
     def update(self):
         self.bar.update()
         self.button.update()
-
-    def build(self):
-        self.page.add(self.blur_sink)
 
     @property
     def page(self):
