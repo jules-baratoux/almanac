@@ -46,12 +46,19 @@ jobs:
           key: flet-downloads-v1-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-${{ steps.prepare.outputs.flet-version }}-py${{ inputs.bundled-python-version || 'auto' }}
 
       - name: Cache Linux build dependencies
+        id: apt-cache
         uses: actions/cache@v6
         with:
           path: /var/cache/apt/archives
           key: ubuntu-apt-archives-${{ runner.os }}-${{ hashFiles(steps.prepare.outputs.linux-dependencies-file) }}
           restore-keys: |
             ubuntu-apt-archives-${{ runner.os }}-
+
+      - name: Warn on APT Cache Miss
+        if: steps.prepare.outputs.install-linux-dependencies == 'true' && steps.apt-cache.outputs.cache-hit != 'true'
+        shell: bash
+        run: |
+          echo "::warning::APT cache missed."
 
       - name: Install Linux build dependencies
         if: steps.prepare.outputs.install-linux-dependencies == 'true'
@@ -71,15 +78,16 @@ jobs:
             echo "::error::Flet did not report any Linux build dependencies."
             exit 1
           fi
+
+          # Ensure APT keeps downloaded packages so they can be cached
+          echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' | sudo tee /etc/apt/apt.conf.d/01keep-debs
           
           if [[ ${EUID} -eq 0 ]]; then
             apt-get update --allow-releaseinfo-change
             apt-get install -y --no-install-recommends "${packages[@]}"
-            apt-get clean
           elif command -v sudo >/dev/null 2>&1; then
             sudo apt-get update --allow-releaseinfo-change
             sudo apt-get install -y --no-install-recommends "${packages[@]}"
-            sudo apt-get clean
           else
             echo "::error::Linux dependency installation requires root or sudo. Set install-linux-dependencies to false and provision this runner manually."
             exit 1
