@@ -54,12 +54,6 @@ jobs:
           restore-keys: |
             ubuntu-apt-archives-${{ runner.os }}-
 
-      - name: Warn on APT Cache Miss
-        if: steps.prepare.outputs.install-linux-dependencies == 'true' && steps.apt-cache.outputs.cache-hit != 'true'
-        shell: bash
-        run: |
-          echo "::warning::APT cache missed."
-
       - name: Install Linux build dependencies
         if: steps.prepare.outputs.install-linux-dependencies == 'true'
         env:
@@ -71,6 +65,11 @@ jobs:
           if ! command -v apt-get >/dev/null 2>&1; then
             echo "::error::Linux dependency installation requires apt-get. Set install-linux-dependencies to false and provision this runner manually."
             exit 1
+          fi
+          
+          # Combined check for APT cache miss
+          if [ "${{ steps.apt-cache.outputs.cache-hit }}" != "true" ]; then
+            echo "::warning::APT cache missed."
           fi
           
           mapfile -t packages < "$DEPENDENCIES_FILE"
