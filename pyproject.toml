@@ -17,7 +17,6 @@ dependencies = [
     "beartype>=0.23.1",
     "flet==1.1.0.dev4",
     "holidays>=0.107",
-    "millify>=0.1.1",
     "python-dateutil>=2.9.0.post0",
     "python-slugify>=9.1.3",
     "pythonbackport-sentinel>=0.1.0",
