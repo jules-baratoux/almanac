@@ -1,8 +1,6 @@
 import datetime
 from typing import Literal
 
-from millify import millify
-
 
 def date_from(today: datetime.date):
     tomorrow = today + datetime.timedelta(days=1)
@@ -70,13 +68,23 @@ def date(value: datetime.date) -> Literal["today", "tomorrow", "yesterday"] | st
 globals()[date.__name__] = date_from(today=datetime.date.today())
 
 
-def number(value: int | float) -> str:
+def number(value: int | float,
+           *,
+           thresholds=(
+                   (1_000_000_000, 'B'),
+                   (1_000_000, 'M'),
+                   (1_000, 'K'),
+           )
+           ) -> str:
     """
+    >>> number(20_000_000)
+    '20M'
+
+    >>> number(109_500_000)
+    '109.5M'
+
     >>> number(1_000_000_000)
     '1B'
-
-    >>> number(1_000_000)
-    '1M'
 
     >>> number(1_550)
     '1.6K'
@@ -84,5 +92,9 @@ def number(value: int | float) -> str:
     >>> number(1_500)
     '1.5K'
     """
-    text = millify(value, precision=1).upper()
-    return text
+
+    for threshold, unit in thresholds:
+        if abs(value) >= threshold:
+            return f"{value / threshold:.1f}".rstrip('0').rstrip('.') + unit
+    else:
+        return f"{value:.1f}".rstrip('0').rstrip('.')
