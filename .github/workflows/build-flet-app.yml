@@ -104,14 +104,33 @@ jobs:
 
       - name: Build APK
         id: build
-        uses: flet-dev/flet-build-action@v1
-        with:
-          target: apk
-          build-number: ${{ github.run_number }}
+        env:
+          ACTION_BUILD_NUMBER: ${{ github.run_number }}
+          ACTION_BUILD_VERSION: "0.1.1"
+          ACTION_TARGET: apk
+          FLET_ANDROID_SIGNING_KEY_PASSWORD: "${{ github.secrets.ANDROID_KEYSTORE_PASSWORD }}"  # Android signing key password
+          FLET_ANDROID_SIGNING_KEY_STORE: "keystore.jks"  # path to an upload keystore `.jks` file for Android apps
+          FLET_ANDROID_SIGNING_KEY_STORE_PASSWORD: "${{ github.secrets.ANDROID_KEYSTORE_PASSWORD }}"  # Android signing store password
+          FLET_CLI_NO_RICH_OUTPUT: "1"
+          PYTHONUTF8: "1"
+        shell: bash
+        run: |
+          # Create keystore directory
+          mkdir --parents "$(dirname "$FLET_ANDROID_SIGNING_KEY_STORE")" --verbose
+          
+          # Decode keystore from secrets to file
+          base64 --decode --ignore-garbage <<< "${{ github.secrets.ANDROID_KEYSTORE_BASE64 }}" > "$FLET_ANDROID_SIGNING_KEY_STORE"
+          
+          # Flet build
+          uv run python "$GITHUB_ACTION_PATH/scripts/flet_action.py" build
+          
+          # Remove keystore file
+          rm --verbose "$FLET_ANDROID_SIGNING_KEY_STORE"
 
       - name: Upload APK
         uses: actions/upload-artifact@v7
         with:
-          path: ${{ steps.build.outputs.archive-path }}
+          name: apk
+          path: ${{ steps.build.outputs.output-path }}
           archive: false
           if-no-files-found: error
