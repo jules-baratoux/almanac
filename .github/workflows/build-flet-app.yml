@@ -10,9 +10,10 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - uses: actions/checkout@v7
+      - name: "Checkout ${{ github.ref_name }} at ${{ github.sha }}: ${{ github.event.head_commit.message }}"
+        uses: actions/checkout@v7
 
-      - name: Set up uv
+      - name: Install uv
         uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
         with:
           enable-cache: "true"
@@ -96,9 +97,10 @@ jobs:
         env:
           PYTHONUTF8: "1"
           FLET_CLI_NO_RICH_OUTPUT: "1"
-        uses: coactions/setup-xvfb@v1
-        with:
-          run: uv run flet test --yes
+        shell: bash
+        run: >-
+          xvfb-run -a --server-args="-screen 0 1280x1024x24"
+          uv run flet test --yes
 
       - name: Build APK
         id: build
