@@ -92,7 +92,7 @@ jobs:
             exit 1
           fi
 
-      - name: Test Flet app
+      - name: Integration tests
         env:
           PYTHONUTF8: "1"
           FLET_CLI_NO_RICH_OUTPUT: "1"
