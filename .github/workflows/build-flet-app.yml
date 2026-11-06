@@ -119,7 +119,7 @@ jobs:
           base64 --decode --ignore-garbage <<< "${{ github.secrets.ANDROID_KEYSTORE_BASE64 }}" > "$FLET_ANDROID_SIGNING_KEY_STORE"
           
           # Flet build
-          uv run python "$GITHUB_ACTION_PATH/scripts/flet_action.py" build
+          uv run python .github/scripts/flet_action.py build
 
       - name: Upload APK
         uses: actions/upload-artifact@v7
