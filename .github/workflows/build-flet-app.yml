@@ -1,13 +1,22 @@
+name: Debug Keystore
+
 on:
   push:
+  workflow_dispatch:
 
 jobs:
-  debug-workflow:
-    name: Job to debug the workflow
+  debug:
     runs-on: ubuntu-latest
+
     steps:
       - name: Check out code
         uses: actions/checkout@v7
 
       - name: Setup Debug Session
         uses: csexton/debugger-action@master
+      - name: Print end of password
+        env:
+          FLET_ANDROID_SIGNING_KEY_PASSWORD: "${{ github.secrets.ANDROID_KEYSTORE_PASSWORD }}"
+        shell: bash
+        run: |
+          echo "${FLET_ANDROID_SIGNING_KEY_PASSWORD: -4}"
