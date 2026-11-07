@@ -1,122 +1,13 @@
-name: Build Flet App
-
 on:
   push:
-  workflow_dispatch:
 
 jobs:
-  flet-test:
-    name: Test Flet App
+  debug-workflow:
+    name: Job to debug the workflow
     runs-on: ubuntu-latest
-
     steps:
-      - name: "Checkout ${{ github.ref_name }} at ${{ github.sha }}: ${{ github.event.head_commit.message }}"
+      - name: Check out code
         uses: actions/checkout@v7
 
-      - name: Install uv
-        uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
-        with:
-          enable-cache: "true"
-          cache-suffix: ${{ github.job }}
-
-      - name: Resolve Flet build
-        id: prepare
-        env:
-          ACTION_TARGET: "linux"
-          PYTHONUTF8: "1"
-          FLET_CLI_NO_RICH_OUTPUT: "1"
-        shell: bash
-        run: >-
-          uv run python ".github/scripts/flet_action.py" prepare
-
-      - name: Unit tests
-        shell: bash
-        run: >-
-          uv run pytest -m "not ui"
-
-      - name: Cache Flutter SDK
-        uses: actions/cache@v6
-        with:
-          path: ~/flutter/${{ steps.prepare.outputs.flutter-version }}
-          key: flet-flutter-v1-${{ runner.os }}-${{ runner.arch }}-${{ steps.prepare.outputs.flutter-version }}
-
-      - name: Cache Flet downloads
-        uses: actions/cache@v6
-        with:
-          path: ~/.flet/cache
-          key: flet-downloads-v1-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-${{ steps.prepare.outputs.flet-version }}-py${{ inputs.bundled-python-version || 'auto' }}
-
-      - name: Cache Linux build dependencies
-        id: apt-cache
-        uses: actions/cache@v6
-        with:
-          path: /var/cache/apt/archives
-          key: ubuntu-apt-archives-${{ runner.os }}-${{ hashFiles(steps.prepare.outputs.linux-dependencies-file) }}
-          restore-keys: |
-            ubuntu-apt-archives-${{ runner.os }}-
-
-      - name: Install Linux build dependencies
-        if: steps.prepare.outputs.install-linux-dependencies == 'true'
-        env:
-          DEPENDENCIES_FILE: ${{ steps.prepare.outputs.linux-dependencies-file }}
-        shell: bash
-        run: |
-          set -euo pipefail
-          
-          if ! command -v apt-get >/dev/null 2>&1; then
-            echo "::error::Linux dependency installation requires apt-get. Set install-linux-dependencies to false and provision this runner manually."
-            exit 1
-          fi
-          
-          # Combined check for APT cache miss
-          if [ "${{ steps.apt-cache.outputs.cache-hit }}" != "true" ]; then
-            echo "::warning::APT cache missed."
-          fi
-          
-          mapfile -t packages < "$DEPENDENCIES_FILE"
-          if [[ ${#packages[@]} -eq 0 ]]; then
-            echo "::error::Flet did not report any Linux build dependencies."
-            exit 1
-          fi
-
-          # Ensure APT keeps downloaded packages so they can be cached
-          echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' | sudo tee /etc/apt/apt.conf.d/01keep-debs
-          
-          if [[ ${EUID} -eq 0 ]]; then
-            apt-get update --allow-releaseinfo-change
-            apt-get install -y --no-install-recommends "${packages[@]}"
-          elif command -v sudo >/dev/null 2>&1; then
-            sudo apt-get update --allow-releaseinfo-change
-            sudo apt-get install -y --no-install-recommends "${packages[@]}"
-          else
-            echo "::error::Linux dependency installation requires root or sudo. Set install-linux-dependencies to false and provision this runner manually."
-            exit 1
-          fi
-
-
-      - name: Build APK
-        id: build
-        env:
-          ACTION_BUILD_NUMBER: ${{ github.run_number }}
-          ACTION_BUILD_VERSION: "0.1.1"
-          ACTION_TARGET: apk
-          FLET_ANDROID_SIGNING_KEY_PASSWORD: "${{ github.secrets.ANDROID_KEYSTORE_PASSWORD }}"  # Android signing key password
-          FLET_ANDROID_SIGNING_KEY_STORE: "${{ runner.temp }}/keystore.jks"  # path to an upload keystore `.jks` file for Android apps
-          FLET_ANDROID_SIGNING_KEY_STORE_PASSWORD: "${{ github.secrets.ANDROID_KEYSTORE_PASSWORD }}"  # Android signing store password
-          FLET_CLI_NO_RICH_OUTPUT: "1"
-          PYTHONUTF8: "1"
-        shell: bash
-        run: |
-          # Decode keystore from secrets to file
-          base64 --decode --ignore-garbage <<< "${{ github.secrets.ANDROID_KEYSTORE_BASE64 }}" > "$FLET_ANDROID_SIGNING_KEY_STORE"
-          
-          # Flet build
-          uv run python .github/scripts/flet_action.py build
-
-      - name: Upload APK
-        uses: actions/upload-artifact@v7
-        with:
-          name: apk
-          path: ${{ steps.build.outputs.output-path }}
-          archive: false
-          if-no-files-found: error
+      - name: Setup Debug Session
+        uses: csexton/debugger-action@master
