@@ -43,7 +43,7 @@ async def test_any_labels_displayed(flet_app: ftt.FletTestApp):
     tester = flet_app.tester
     await tester.pump_and_settle()
 
-    with as_completed(tester.find_by_text(label.name) for label in events.Labels) as finders:
+    with as_completed(tester.find_by_text(label.value) for label in events.Labels) as finders:
         async for finder in finders:
             if finder.count > 0:
                 return
