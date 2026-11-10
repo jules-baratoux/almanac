@@ -54,7 +54,3 @@ path = "src"
 [tool.flet.splash]
 color = "#111827"
 dark_color = "#111827"
-
-[tool.flet.android.signing]
-key_store = "C:/Users/jules/keystores/fr.baratoux.jules.almanac.jks"
-key_alias = "upload"
