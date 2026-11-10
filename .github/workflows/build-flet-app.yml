@@ -52,8 +52,7 @@ jobs:
         with:
           path: /var/cache/apt/archives
           key: ubuntu-apt-archives-${{ runner.os }}-${{ hashFiles(steps.prepare.outputs.linux-dependencies-file) }}
-          restore-keys: |
-            ubuntu-apt-archives-${{ runner.os }}-
+          restore-keys: ubuntu-apt-archives-${{ runner.os }}-
 
       - name: Install Linux build dependencies
         if: steps.prepare.outputs.install-linux-dependencies == 'true'
