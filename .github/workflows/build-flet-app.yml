@@ -1,4 +1,4 @@
-name: Build Flet App
+name: "Build Flet App"
 
 on:
   push:
@@ -6,20 +6,43 @@ on:
 
 jobs:
   flet-test:
-    name: Test Flet App
+    name: "Install uv, list Flet APT packages, install & cache packages"
     runs-on: ubuntu-latest
 
     steps:
-      - name: "Checkout ${{ github.ref_name }} at ${{ github.sha }}: ${{ github.event.head_commit.message }}"
+      - name: "Root tar"
+        run: sudo chown root /bin/tar && sudo chmod u+s /bin/tar
+
+      - name: "Add APT cache"
+        id: apt-cache
+        uses: actions/cache@v6
+        with:
+          path: /var/cache/apt/archives/*.deb
+          key: apt-cache-${{ hashFiles(steps.prepare.outputs.linux-dependencies-file) }}
+          restore-keys: |
+            apt-cache
+
+      - name: "Configure APT cache"
+        run: |
+          sudo tee /etc/apt/apt.conf.d/99keep-downloaded-packages <<EOF
+          Binary::apt::APT::Keep-Downloaded-Packages "true";
+          EOF
+
+      - name: "Checkout ${{ github.repository }}@${{ github.ref_name }}"
         uses: actions/checkout@v7
 
-      - name: Install uv
+      - name: "Install uv"
         uses: astral-sh/setup-uv@11f9893b081a58869d3b5fccaea48c9e9e46f990 # v8.3.2
         with:
           enable-cache: "true"
           cache-suffix: ${{ github.job }}
 
-      - name: Resolve Flet build
+      - name: "Unit tests"
+        shell: bash
+        run: >-
+          uv run pytest -m "not ui"
+
+      - name: "Configure job"
         id: prepare
         env:
           ACTION_TARGET: "linux"
@@ -27,37 +50,22 @@ jobs:
           FLET_CLI_NO_RICH_OUTPUT: "1"
         shell: bash
         run: >-
-          uv run python ".github/scripts/flet_action.py" prepare
+          uv run python .github/scripts/flet_action.py prepare
 
-      - name: Unit tests
-        shell: bash
-        run: >-
-          uv run pytest -m "not ui"
-
-      - name: Cache Flutter SDK
+      - name: "Cache Flutter SDK"
         uses: actions/cache@v6
         with:
           path: ~/flutter/${{ steps.prepare.outputs.flutter-version }}
           key: flet-flutter-v1-${{ runner.os }}-${{ runner.arch }}-${{ steps.prepare.outputs.flutter-version }}
 
-      - name: Cache Flet downloads
+      - name: "Cache Flet downloads"
         uses: actions/cache@v6
         with:
           path: ~/.flet/cache
           key: flet-downloads-v1-${{ runner.os }}-${{ runner.arch }}-${{ github.job }}-${{ steps.prepare.outputs.flet-version }}-py${{ inputs.bundled-python-version || 'auto' }}
 
-      - name: Cache Linux build dependencies
-        id: apt-cache
-        uses: actions/cache@v6
-        with:
-          path: /var/cache/apt/archives
-          key: ubuntu-apt-archives-${{ runner.os }}-${{ hashFiles(steps.prepare.outputs.linux-dependencies-file) }}
-          restore-keys: ubuntu-apt-archives-${{ runner.os }}-
-
-      - name: Install Linux build dependencies
+      - name: "Run APT install"
         if: steps.prepare.outputs.install-linux-dependencies == 'true'
-        env:
-          DEPENDENCIES_FILE: ${{ steps.prepare.outputs.linux-dependencies-file }}
         shell: bash
         run: |
           set -euo pipefail
@@ -72,14 +80,11 @@ jobs:
             echo "::warning::APT cache missed."
           fi
           
-          mapfile -t packages < "$DEPENDENCIES_FILE"
+          mapfile -t packages < "${{ steps.prepare.outputs.linux-dependencies-file }}"
           if [[ ${#packages[@]} -eq 0 ]]; then
             echo "::error::Flet did not report any Linux build dependencies."
             exit 1
           fi
-
-          # Ensure APT keeps downloaded packages so they can be cached
-          echo 'Binary::apt::APT::Keep-Downloaded-Packages "true";' | sudo tee /etc/apt/apt.conf.d/01keep-debs
           
           if [[ ${EUID} -eq 0 ]]; then
             apt-get update --allow-releaseinfo-change
@@ -92,7 +97,7 @@ jobs:
             exit 1
           fi
 
-      - name: Integration tests
+      - name: "Integration tests"
         env:
           PYTHONUTF8: "1"
           FLET_CLI_NO_RICH_OUTPUT: "1"
@@ -101,7 +106,7 @@ jobs:
           xvfb-run -a --server-args="-screen 0 1280x1024x24"
           uv run flet test --yes
 
-      - name: Build APK
+      - name: "Build APK"
         id: build
         env:
           ACTION_BUILD_NUMBER: ${{ github.run_number }}
@@ -129,7 +134,7 @@ jobs:
           # Flet build
           uv run python .github/scripts/flet_action.py build
 
-      - name: Upload APK
+      - name: "Upload APK"
         uses: actions/upload-artifact@v7
         with:
           name: apk
