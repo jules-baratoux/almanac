@@ -106,12 +106,12 @@ jobs:
           xvfb-run -a --server-args="-screen 0 1280x1024x24"
           uv run flet test --yes -- -m integration
 
-      - name: "Build APK"
-        id: build
+      - name: "Build AAB"
+        id: aab
         env:
           ACTION_BUILD_NUMBER: ${{ github.run_number }}
           ACTION_BUILD_VERSION: "0.1.1"
-          ACTION_TARGET: apk
+          ACTION_TARGET: aab
           FLET_ANDROID_SIGNING_KEY_ALIAS: upload
           FLET_ANDROID_SIGNING_KEY_PASSWORD: "${{ secrets.ANDROID_KEYSTORE_PASSWORD }}"
           FLET_ANDROID_SIGNING_KEY_STORE: "${{ runner.temp }}/keystore.jks"
@@ -133,11 +133,23 @@ jobs:
           
           # Flet build
           uv run python .github/scripts/flet_action.py build
+          
+          # Export built vars to output
+          uv run python .github/scripts/actions.py export build/flutter/.vars bundle_id >> $GITHUB_OUTPUT
 
-      - name: "Upload APK"
-        uses: actions/upload-artifact@v7
+      - name: "Authenticate to Google Cloud"
+        id: auth
+        uses: google-github-actions/auth@v3
         with:
-          name: apk
-          path: ${{ steps.build.outputs.output-path }}
-          archive: false
-          if-no-files-found: error
+          project_id: almanac-510717
+          workload_identity_provider: projects/898624179254/locations/global/workloadIdentityPools/github/providers/almanac-github-provider
+          service_account: github-actions@almanac-510717.iam.gserviceaccount.com
+
+      - name: "Upload to Google Play"
+        uses: r0adkll/upload-google-play@v1
+        with:
+          packageName: ${{ steps.aab.outputs.bundle_id }}
+          releaseFiles: ${{ steps.aab.outputs.output-path }}/*
+          serviceAccountJson: ${{ steps.auth.outputs.credentials_file_path }}
+          tracks: internal
+          whatsNewDirectory: distribution/whatsnew
