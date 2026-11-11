@@ -7,7 +7,7 @@ import pytest
 import events
 
 
-@pytest.mark.ui
+@pytest.mark.integration
 async def test_any_labels_displayed(
         flet_app: ftt.FletTestApp,
         labels=tuple(label.value for label in events.Labels)

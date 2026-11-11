@@ -41,7 +41,7 @@ testpaths = ["tests", "src"]
 python_files = ["*.py"]
 pythonpath = ["src"]
 markers = [
-    "ui: Flet integration tests that launch the app host"
+    "integration: Flet integration tests"
 ]
 
 [tool.flet]
