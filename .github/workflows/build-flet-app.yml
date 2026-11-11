@@ -137,6 +137,14 @@ jobs:
           # Export built vars to output
           uv run python .github/scripts/actions.py export build/flutter/.vars bundle_id >> $GITHUB_OUTPUT
 
+      - name: "Upload AAB artifact"
+        uses: actions/upload-artifact@v7
+        with:
+          path: ${{ steps.aab.outputs.output-path }}
+          retention-days: 7
+          archive: false
+          if-no-files-found: error
+
       - name: "Authenticate to Google Cloud"
         id: auth
         uses: google-github-actions/auth@v3
