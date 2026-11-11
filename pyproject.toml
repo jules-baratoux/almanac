@@ -29,6 +29,7 @@ dev = [
     "flet-desktop==1.1.0.dev4",
     "flet-web==1.1.0.dev4",
     "flet[test]==1.1.0.dev4",
+    "humanize>=4.16.0",
     "pytest~=9.1",
 ]
 
