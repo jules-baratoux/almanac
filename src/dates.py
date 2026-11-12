@@ -1,16 +1,16 @@
-from calendar import Day, JANUARY, MONDAY, Month, NOVEMBER, THURSDAY, monthrange
+from calendar import Day, JANUARY, MONDAY, Month, monthrange
+from collections.abc import Iterable
 from datetime import date, timedelta
 from functools import partial
 from typing import Annotated
 
-import holidays
 from annotated_types import Doc, Gt, Interval
 from dateutil.relativedelta import relativedelta
 
 from dispatch import overload
 
 
-class Span:
+class Span(Iterable[date]):
     start: date
     end: date
 
@@ -27,6 +27,9 @@ class Span:
     def __iter__(self):
         yield self.start
         yield self.end
+
+    def __repr__(self):
+        return repr((self.start, self.end))
 
 
 def weekday(year: int, month: Month, weekday: Day,
@@ -56,40 +59,27 @@ next_month = today + relativedelta(months=+1, day=1)
 month_after_next = today + relativedelta(months=+2, day=1)
 next_year = today + relativedelta(years=1, month=JANUARY, day=1)
 
-# Calendars
-year: int = today.year
-algeria = holidays.Algeria(years=year, language='en_US', categories=holidays.Algeria.supported_categories)
-canada = holidays.Canada(years=year, language='en_US', categories=holidays.Canada.supported_categories)
-china = holidays.China(years=year, language='en_US')
-france = holidays.France(years=year, categories=holidays.France.supported_categories)
-france._add_childrens_day("Children's Day", "NOV")
-
-hongkong = holidays.HongKong(years=year, language='en_US')
-israel = holidays.Israel(years=year, language='en_US', categories=('optional', 'public', 'school'))
-italy = holidays.Italy(years=year, subdiv="MI")
-mexico = holidays.Mexico(years=year, language='en_US')
-us = holidays.UnitedStates(years=year)
-
 # Dates
-ALGERIAN_REVOLUTION_DAY = min(algeria.get_named('Revolution Day'))
-ARMISTICE: date = min(france.get_named("Armistice"))
-BEAUJOLAIS = third(year, NOVEMBER, THURSDAY)
-BLACK_FRIDAY = (THANKSGIVING := min(us.get_named("Thanksgiving"))) + timedelta(days=1)
-UN_CHILDRENS_DAY = min(france.get_named("Children's Day"))
-CHRISTMAS: date = min(us.get_named('Christmas Day'))
-CYBER_MONDAY = BLACK_FRIDAY + timedelta(days=3)
-GOLDEN_WEEK = Span(min(china.get_named('National Day')), days=7)
-HANUKKAH = israel.get_named("Hanukkah")
-IMMACOLATA_CONCEZIONE: date = min(italy.get_named("Immacolata Concezione"))
-LABOR_DAY: date = min(us.get_named("Labor Day"))
-MID_AUTUMN_FESTIVAL: date = min(china.get_named('Mid-Autumn Festival'))
-NEW_YEAR: date = min(us.get_named('New Year'))
-PHILOSOPHY = third(year, NOVEMBER, THURSDAY)
-ROSH_HASHANAH = israel.get_named("Rosh Hashanah")
-SANTO_STEFANO: date = min(italy.get_named('Santo Stefano'))
-SANT_AMBROGIO: date = min(italy.get_named("Sant'Ambrogio"))
-SUKKOT = israel.get_named('Sukkot')
-YENNAYER = min(algeria.get_named('Amazigh New Year'))
+ALGERIAN_REVOLUTION_DAY = date(2026, 11, 1)
+ARMISTICE = date(2026, 11, 11)
+BEAUJOLAIS = date(2026, 11, 19)
+BLACK_FRIDAY = date(2026, 11, 27)
+UN_CHILDRENS_DAY = date(2026, 11, 20)
+CHRISTMAS = date(2026, 12, 25)
+CYBER_MONDAY = date(2026, 11, 30)
+GOLDEN_WEEK = date(2026, 10, 1), date(2026, 10, 7)
+HANUKKAH = date(2026, 12, 5), date(2026, 12, 12)
+IMMACOLATA_CONCEZIONE = date(2026, 12, 8)
+LABOR_DAY = date(2026, 9, 7)
+MID_AUTUMN_FESTIVAL = date(2026, 9, 25)
+NEW_YEAR = date(2026, 1, 1)
+PHILOSOPHY = date(2026, 11, 19)
+ROSH_HASHANAH = date(2026, 9, 12), date(2026, 9, 13)
+SANTO_STEFANO = date(2026, 12, 26)
+SANT_AMBROGIO = date(2026, 12, 7)
+SUKKOT = date(2026, 9, 26), date(2026, 10, 1)
+THANKSGIVING = date(2026, 11, 26)
+YENNAYER = date(2026, 1, 12)
 
 __all__ = (
     'ALGERIAN_REVOLUTION_DAY',
@@ -121,10 +111,21 @@ __all__ = (
     'today',
     'tomorrow',
     'week_after_next',
-    'year',
     'yesterday',
 )
 
 
 def test_import():
     assert __all__, "Module did not import correctly"
+
+
+def hardcode():
+    for name in __all__:
+        if name.isupper():
+            value = globals()[name]
+            _repr = f"{min(value)!r}, {max(value)!r}" if isinstance(value, Iterable) else repr(value)
+            print(f"{name} = {_repr}")
+
+
+if __name__ == '__main__':
+    hardcode()
