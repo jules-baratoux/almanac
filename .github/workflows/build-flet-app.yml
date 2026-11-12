@@ -137,7 +137,7 @@ jobs:
       - name: "Upload to Google Play"
         uses: r0adkll/upload-google-play@v1
         with:
-          packageName: ${{ steps.aab.outputs.bundle_id }}
+          packageName: fr.baratoux.jules.almanac
           releaseFiles: build/aab/almanac.aab
           serviceAccountJson: ${{ steps.auth.outputs.credentials_file_path }}
           tracks: internal
