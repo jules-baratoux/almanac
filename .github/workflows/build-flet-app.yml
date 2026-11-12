@@ -8,6 +8,9 @@ jobs:
   flet-test:
     name: "Install uv, list Flet APT packages, install & cache packages"
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
 
     steps:
       - name: "Checkout ${{ github.repository }}@${{ github.ref_name }}"
