@@ -1,8 +1,12 @@
-name: "Build Flet App"
+name: "App"
 
 on:
   push:
-  workflow_dispatch:
+    paths:
+      - "src/**"
+      - "tests/**"
+      - "pyproject.toml"
+      - "uv.lock"
 
 jobs:
   flet-test:
