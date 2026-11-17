@@ -22,7 +22,9 @@ dev = [
     { name = "flet-desktop" },
     { name = "flet-web" },
     { name = "humanize" },
+    { name = "pillow" },
     { name = "pytest" },
+    { name = "resvg-py" },
 ]
 
 [package.metadata]
@@ -43,7 +45,9 @@ dev = [
     { name = "flet-desktop", specifier = "==1.1.0.dev4" },
     { name = "flet-web", specifier = "==1.1.0.dev4" },
     { name = "humanize", specifier = ">=4.16.0" },
+    { name = "pillow", specifier = ">=13.0.0" },
     { name = "pytest", specifier = "~=9.1" },
+    { name = "resvg-py", specifier = ">=0.5.0" },
 ]
 
 [[package]]
